@@ -49,7 +49,7 @@ var MigrationsCmd = &cobra.Command{
 			log.Fatalf("failed to create migration driver: %v", err)
 		}
 
-		m, err := migrate.NewWithDatabaseInstance("file://cmd/migrations/sql", "postgres", driver)
+		m, err := migrate.NewWithDatabaseInstance("file://cmd/migrations", "postgres", driver)
 
 		if err != nil {
 			log.Fatalf("failed to create migrate instance: %v", err)

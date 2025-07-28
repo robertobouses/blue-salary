@@ -17,8 +17,8 @@ type Payroll struct {
 	PersonalComplement     int
 	ExtraHourPay           int
 	MonthlyGrossWithExtras int
-	BaseBCCC               int
-	BaseBCCC               int
+	BCCC                   int
+	BCCP                   int
 	IrpfAmount             int
 	IrpfEffectiveRate      int
 	SSContributions        int
