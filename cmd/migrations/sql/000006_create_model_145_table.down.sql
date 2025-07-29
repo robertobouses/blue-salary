@@ -1,0 +1,3 @@
+BEGIN;
+DROP TABLE IF EXISTS blues.model_145;
+COMMIT;
