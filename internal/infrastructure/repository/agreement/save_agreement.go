@@ -1,12 +1,13 @@
 package agreement
 
 import (
+	"context"
 	"log"
 
 	"github.com/robertobouses/blue-salary/internal/domain"
 )
 
-func (r *Repository) SaveAgreementQuery(agreement domain.Agreement) error {
+func (r *Repository) SaveAgreement(c context.Context, agreement domain.Agreement) error {
 	_, err := r.saveAgreement.Exec(
 		agreement.Name,
 		agreement.NumberOfExtraPayments,

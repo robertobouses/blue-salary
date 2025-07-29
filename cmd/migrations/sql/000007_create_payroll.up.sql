@@ -1,7 +1,7 @@
 BEGIN;
 
 CREATE TABLE blues.payroll (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     employee_id UUID NOT NULL REFERENCES blues.employee(id),
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,

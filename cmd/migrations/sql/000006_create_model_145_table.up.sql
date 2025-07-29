@@ -1,7 +1,7 @@
 BEGIN;
 
 CREATE TABLE blues.model_145 (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     employee_id UUID NOT NULL REFERENCES blues.employee(id),
     marital_status TEXT NOT NULL,
     has_spouse BOOLEAN NOT NULL,
