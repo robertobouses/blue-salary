@@ -8,16 +8,22 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
+	"github.com/robertobouses/blue-salary/internal/infrastructure/http/employee"
+	"github.com/robertobouses/blue-salary/internal/infrastructure/http/model_145"
 )
 
 type Server struct {
 	agreement agreement.Handler
+	employee  employee.Handler
+	model145  model_145.Handler
 	engine    *gin.Engine
 }
 
-func NewServer(agreement agreement.Handler) Server {
+func NewServer(agreement agreement.Handler, employee employee.Handler, model145 model_145.Handler) Server {
 	return Server{
 		agreement: agreement,
+		employee:  employee,
+		model145:  model145,
 		engine:    gin.Default(),
 	}
 }
@@ -34,6 +40,12 @@ func (s *Server) Run(port string) error {
 
 	agreement := s.engine.Group("/agreement")
 	agreement.POST("/create", s.agreement.PostAgreement)
+
+	employee := s.engine.Group("/employee")
+	employee.POST("/create", s.employee.PostEmployee)
+
+	model145 := s.engine.Group("/model145")
+	model145.POST("/create", s.model145.PostModel145)
 
 	log.Printf("running api at %s port\n", port)
 	return s.engine.Run(fmt.Sprintf(":%s", port))

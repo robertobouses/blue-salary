@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/google/uuid"
 	"github.com/robertobouses/blue-salary/internal/domain"
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
 )
@@ -13,7 +12,6 @@ func (a AppService) CreateAgreement(ctx context.Context, input agreement.Agreeme
 	log.Printf("usecase: creating agreement with name: %s and extra payments: %d", input.Name, input.NumberOfExtraPayments)
 
 	agreement := domain.Agreement{
-		ID:                    uuid.New(),
 		Name:                  input.Name,
 		NumberOfExtraPayments: input.NumberOfExtraPayments,
 	}
