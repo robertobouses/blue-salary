@@ -6,9 +6,12 @@ import (
 
 	"github.com/joho/godotenv"
 	appAgreement "github.com/robertobouses/blue-salary/internal/domain/use_cases/agreement"
+	appEmployee "github.com/robertobouses/blue-salary/internal/domain/use_cases/employee"
 	httpServer "github.com/robertobouses/blue-salary/internal/infrastructure/http"
 	handlerAgreement "github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
+	handlerEmployee "github.com/robertobouses/blue-salary/internal/infrastructure/http/employee"
 	repositoryAgreement "github.com/robertobouses/blue-salary/internal/infrastructure/repository/agreement"
+	repositoryEmployee "github.com/robertobouses/blue-salary/internal/infrastructure/repository/employee"
 	internalPostgres "github.com/robertobouses/blue-salary/internal/pkg/postgres"
 	"github.com/spf13/cobra"
 )
@@ -43,14 +46,19 @@ var ServerCmd = &cobra.Command{
 		agreementRepo, err := repositoryAgreement.NewRepository(db)
 		if err != nil {
 			log.Fatal("failde to init agreement repository:", err)
-
+		}
+		employeeRepo, err := repositoryEmployee.NewRepository(db)
+		if err != nil {
+			log.Fatal("failde to init agreement repository:", err)
 		}
 
 		agreementApp := appAgreement.NewApp(agreementRepo)
+		employeeApp := appEmployee.NewApp(employeeRepo)
 
 		agreementHandler := handlerAgreement.NewHandler(agreementApp)
+		employeeHandler := handlerEmployee.NewHandler(employeeApp)
 
-		s := httpServer.NewServer(agreementHandler)
+		s := httpServer.NewServer(agreementHandler, employeeHandler)
 
 		if err := s.Run("8080"); err != nil {
 			log.Fatal("server failed:", err)
