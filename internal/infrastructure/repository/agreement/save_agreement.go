@@ -7,8 +7,9 @@ import (
 	"github.com/robertobouses/blue-salary/internal/domain"
 )
 
-func (r *Repository) SaveAgreement(c context.Context, agreement domain.Agreement) error {
-	_, err := r.saveAgreement.Exec(
+func (r *Repository) SaveAgreement(ctx context.Context, agreement domain.Agreement) error {
+	_, err := r.saveAgreement.ExecContext(
+		ctx,
 		agreement.Name,
 		agreement.NumberOfExtraPayments,
 	)
