@@ -8,6 +8,7 @@ import (
 
 type App interface {
 	CreateAgreement(ctx context.Context, req AgreementRequest) error
+	CreateCategory(ctx context.Context, req CategoryRequest) error
 	UpdateFullAgreement(ctx context.Context, agreement domain.Agreement) error
 }
 
