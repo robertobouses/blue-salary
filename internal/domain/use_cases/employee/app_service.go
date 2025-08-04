@@ -10,6 +10,7 @@ import (
 type EmployeeRepository interface {
 	SaveEmployee(c context.Context, employee domain.Employee) error
 	FindEmployeeByID(employeeID uuid.UUID) (domain.Employee, error)
+	FindEmployees() ([]domain.Employee, error)
 }
 
 func NewApp(EmployeeRepository EmployeeRepository) AppService {

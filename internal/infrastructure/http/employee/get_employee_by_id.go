@@ -20,28 +20,24 @@ func (h *Handler) GetEmployeeByID(c *gin.Context) {
 
 	employeeID, err := uuid.Parse(employeeIDString)
 	if err != nil {
-		log.Printf("Invalid employeeID: %s | Error: %v", employeeIDString, err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid match_id"})
-		return
-	}
-
-	if employeeID == uuid.Nil {
-		log.Println("Missing 'employeeID' query parameter")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "employeeID query param is required"})
+		log.Printf("Invalid employee_id: %s | Error: %v", employeeIDString, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid employee_id"})
 		return
 	}
 
 	employee, err := h.app.LoadEmployeeByID(employeeID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get match details"})
+		log.Printf("Error loading employee by ID: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get employee details"})
 		return
 	}
 
-	var employeeResponse EmployeeResponse
-	employeeResponse.ID = employee.ID
-	employeeResponse.FirstName = employee.FirstName
-	employeeResponse.LastName = employee.LastName
-	employeeResponse.SecondLastName = employee.SecondLastName
+	employeeResponse := EmployeeResponse{
+		ID:             employee.ID,
+		FirstName:      employee.FirstName,
+		LastName:       employee.LastName,
+		SecondLastName: employee.SecondLastName,
+	}
 
 	c.JSON(http.StatusOK, employeeResponse)
 }
