@@ -14,7 +14,7 @@ type AgreementUpdateRequest struct {
 	Name                  string                    `json:"name"`
 	NumberOfExtraPayments int                       `json:"number_of_extra_payments"`
 	Categories            []domain.Category         `json:"categories"`
-	Complements           []domain.SalaryComplement `json:"complements"`
+	SalaryComplements     []domain.SalaryComplement `json:"salary_complements"`
 }
 
 func (h Handler) UpdateAgreement(c *gin.Context) {
@@ -33,7 +33,7 @@ func (h Handler) UpdateAgreement(c *gin.Context) {
 		Name:                  req.Name,
 		NumberOfExtraPayments: req.NumberOfExtraPayments,
 		Categories:            req.Categories,
-		Complements:           req.Complements,
+		SalaryComplements:     req.SalaryComplements,
 	}
 
 	if err := h.app.UpdateFullAgreement(c.Request.Context(), agreement); err != nil {

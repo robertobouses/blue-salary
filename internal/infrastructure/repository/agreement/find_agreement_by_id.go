@@ -35,7 +35,7 @@ func (r *Repository) FindAgreementByID(agreementID uuid.UUID) (domain.Agreement,
 		agreement.Categories = append(agreement.Categories, category)
 	}
 
-	compRows, err := r.findComplementByID.Query(agreementID)
+	compRows, err := r.findSalaryComplementByID.Query(agreementID)
 	if err != nil {
 		return domain.Agreement{}, err
 	}
@@ -47,11 +47,11 @@ func (r *Repository) FindAgreementByID(agreementID uuid.UUID) (domain.Agreement,
 		if err != nil {
 			return domain.Agreement{}, err
 		}
-		agreement.Complements = append(agreement.Complements, complement)
+		agreement.SalaryComplements = append(agreement.SalaryComplements, complement)
 	}
 
 	log.Printf("FindAgreementByID returned agreement: ID=%v, Name=%v, ExtraPayments=%v, Categories=%d, Complements=%d",
-		agreement.ID, agreement.Name, agreement.NumberOfExtraPayments, len(agreement.Categories), len(agreement.Complements))
+		agreement.ID, agreement.Name, agreement.NumberOfExtraPayments, len(agreement.Categories), len(agreement.SalaryComplements))
 
 	return agreement, nil
 }

@@ -17,7 +17,7 @@ func (a AppService) UpdateFullAgreement(ctx context.Context, agreement domain.Ag
 		return err
 	}
 
-	err = a.agreementRepo.UpdateComplements(ctx, agreement.ID, agreement.Complements)
+	err = a.agreementRepo.UpdateSalaryComplements(ctx, agreement.ID, agreement.SalaryComplements)
 	if err != nil {
 		return err
 	}

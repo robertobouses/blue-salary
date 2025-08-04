@@ -8,14 +8,14 @@ import (
 	"github.com/robertobouses/blue-salary/internal/domain"
 )
 
-func (r *Repository) UpdateComplements(ctx context.Context, agreementID uuid.UUID, complements []domain.SalaryComplement) error {
-	_, err := r.deleteComplements.ExecContext(ctx, agreementID)
+func (r *Repository) UpdateSalaryComplements(ctx context.Context, agreementID uuid.UUID, complements []domain.SalaryComplement) error {
+	_, err := r.deleteSalaryComplements.ExecContext(ctx, agreementID)
 	if err != nil {
-		return fmt.Errorf("error deleting complements for agreement %s: %w", agreementID, err)
+		return fmt.Errorf("error deleting salary complements for agreement %s: %w", agreementID, err)
 	}
 
 	for _, complement := range complements {
-		_, err := r.saveComplements.ExecContext(
+		_, err := r.saveSalaryComplements.ExecContext(
 			ctx,
 			complement.ID,
 			complement.Name,
@@ -24,7 +24,7 @@ func (r *Repository) UpdateComplements(ctx context.Context, agreementID uuid.UUI
 			agreementID,
 		)
 		if err != nil {
-			return fmt.Errorf("error inserting complement %s: %w", complement.ID, err)
+			return fmt.Errorf("error inserting salary complement %s: %w", complement.ID, err)
 		}
 	}
 
