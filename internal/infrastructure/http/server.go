@@ -43,6 +43,7 @@ func (s *Server) Run(port string) error {
 
 	employee := s.engine.Group("/employee")
 	employee.POST("/create", s.employee.PostEmployee)
+	employee.GET("/:id", s.employee.GetEmployeeByID)
 
 	model145 := s.engine.Group("/model145")
 	model145.POST("/create", s.model145.PostModel145)
