@@ -2,10 +2,15 @@ package agreement
 
 import (
 	"context"
+
+	"github.com/robertobouses/blue-salary/internal/domain"
 )
 
 type App interface {
 	CreateAgreement(ctx context.Context, req AgreementRequest) error
+	CreateCategory(ctx context.Context, req CategoryRequest) error
+	CreateSalaryComplement(ctx context.Context, req SalaryComplementRequest) error
+	UpdateFullAgreement(ctx context.Context, agreement domain.Agreement) error
 }
 
 func NewHandler(app App) Handler {

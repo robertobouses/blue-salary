@@ -9,7 +9,7 @@ type Agreement struct {
 	Name                  string
 	NumberOfExtraPayments int
 	Categories            []Category
-	Complements           []SalaryComplement
+	SalaryComplements     []SalaryComplement
 }
 
 type Category struct {
