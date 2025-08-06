@@ -43,6 +43,7 @@ func (s *Server) Run(port string) error {
 	agreement.POST("/category", s.agreement.PostCategory)
 	agreement.POST("/complement", s.agreement.PostSalaryComplement)
 	agreement.PATCH("/update", s.agreement.UpdateAgreement)
+	agreement.GET("/all", s.agreement.GetAgreements)
 
 	employee := s.engine.Group("/employee")
 	employee.POST("/create", s.employee.PostEmployee)

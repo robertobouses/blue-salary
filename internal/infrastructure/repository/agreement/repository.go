@@ -33,6 +33,9 @@ var deleteCategoriesQuery string
 //go:embed sql/delete_salary_complements.sql
 var deleteSalaryComplementsQuery string
 
+//go:embed sql/find_agreement.sql
+var findAgreementQuery string
+
 func NewRepository(db *sql.DB) (*Repository, error) {
 	saveAgreementStmt, err := db.Prepare(saveAgreementQuery)
 	if err != nil {
@@ -70,6 +73,10 @@ func NewRepository(db *sql.DB) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
+	findAgreementsStmt, err := db.Prepare(findAgreementQuery)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Repository{
 		db:                       db,
@@ -82,6 +89,7 @@ func NewRepository(db *sql.DB) (*Repository, error) {
 		saveSalaryComplements:    saveSalaryComplementStmt,
 		deleteCategories:         deleteCategoriesStmt,
 		deleteSalaryComplements:  deleteSalaryComplementsStmt,
+		findAgreement:            findAgreementsStmt,
 	}, nil
 }
 
@@ -96,4 +104,5 @@ type Repository struct {
 	saveSalaryComplements    *sql.Stmt
 	deleteCategories         *sql.Stmt
 	deleteSalaryComplements  *sql.Stmt
+	findAgreement            *sql.Stmt
 }

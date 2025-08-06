@@ -11,6 +11,7 @@ type App interface {
 	CreateCategory(ctx context.Context, req CategoryRequest) error
 	CreateSalaryComplement(ctx context.Context, req SalaryComplementRequest) error
 	UpdateFullAgreement(ctx context.Context, agreement domain.Agreement) error
+	LoadAgreements() ([]*domain.Agreement, error)
 }
 
 func NewHandler(app App) Handler {
