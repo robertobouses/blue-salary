@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/robertobouses/blue-salary/internal/domain"
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/model_145"
 )
@@ -11,8 +12,13 @@ import (
 func (a AppService) CreateModel145(ctx context.Context, input model_145.Model145Request) error {
 	log.Printf("usecase: creating model145 for employee: %s", input.EmployeeID)
 
+	employeeID, err := uuid.Parse(input.EmployeeID)
+	if err != nil {
+		log.Printf("usecase: invalid employeeID format: %v", err)
+		return err
+	}
 	model145 := domain.Model145{
-		EmployeeID:             input.EmployeeID,
+		EmployeeID:             employeeID,
 		MaritalStatus:          input.MaritalStatus,
 		HasSpouse:              input.HasSpouse,
 		SpouseIncomeBelowLimit: input.SpouseIncomeBelowLimit,

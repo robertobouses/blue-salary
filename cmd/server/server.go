@@ -8,13 +8,16 @@ import (
 	appAgreement "github.com/robertobouses/blue-salary/internal/domain/use_cases/agreement"
 	appEmployee "github.com/robertobouses/blue-salary/internal/domain/use_cases/employee"
 	appModel145 "github.com/robertobouses/blue-salary/internal/domain/use_cases/model_145"
+	appPayroll "github.com/robertobouses/blue-salary/internal/domain/use_cases/payroll"
 	httpServer "github.com/robertobouses/blue-salary/internal/infrastructure/http"
 	handlerAgreement "github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
 	handlerEmployee "github.com/robertobouses/blue-salary/internal/infrastructure/http/employee"
 	handlerModel145 "github.com/robertobouses/blue-salary/internal/infrastructure/http/model_145"
+	handlerPayroll "github.com/robertobouses/blue-salary/internal/infrastructure/http/payroll"
 	repositoryAgreement "github.com/robertobouses/blue-salary/internal/infrastructure/repository/agreement"
 	repositoryEmployee "github.com/robertobouses/blue-salary/internal/infrastructure/repository/employee"
 	repositoryModel145 "github.com/robertobouses/blue-salary/internal/infrastructure/repository/model_145"
+	repositoryPayroll "github.com/robertobouses/blue-salary/internal/infrastructure/repository/payroll"
 	internalPostgres "github.com/robertobouses/blue-salary/internal/pkg/postgres"
 	"github.com/spf13/cobra"
 )
@@ -52,22 +55,28 @@ var ServerCmd = &cobra.Command{
 		}
 		employeeRepo, err := repositoryEmployee.NewRepository(db)
 		if err != nil {
-			log.Fatal("failde to init agreement repository:", err)
+			log.Fatal("failde to init employee repository:", err)
 		}
 		model145Repo, err := repositoryModel145.NewRepository(db)
 		if err != nil {
-			log.Fatal("failde to init agreement repository:", err)
+			log.Fatal("failde to init model 145 repository:", err)
+		}
+		payrollRepo, err := repositoryPayroll.NewRepository(db)
+		if err != nil {
+			log.Fatal("failde to init payroll repository:", err)
 		}
 
 		agreementApp := appAgreement.NewApp(agreementRepo)
 		employeeApp := appEmployee.NewApp(employeeRepo)
 		model145App := appModel145.NewApp(model145Repo)
+		payrollApp := appPayroll.NewApp(payrollRepo)
 
 		agreementHandler := handlerAgreement.NewHandler(&agreementApp)
 		employeeHandler := handlerEmployee.NewHandler(employeeApp)
 		model145Handler := handlerModel145.NewHandler(model145App)
+		payrollHandler := handlerPayroll.NewHandler(payrollApp)
 
-		s := httpServer.NewServer(agreementHandler, employeeHandler, model145Handler)
+		s := httpServer.NewServer(agreementHandler, employeeHandler, model145Handler, payrollHandler)
 
 		if err := s.Run("8080"); err != nil {
 			log.Fatal("server failed:", err)

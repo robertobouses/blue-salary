@@ -5,14 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type CategoryRequest struct {
-	Name        string    `json:"name"`
-	Level       int       `json:"level"`
-	BaseSalary  int       `json:"base_salary"`
-	AgreementID uuid.UUID `json:"agreement_id"`
+	Name        string `json:"name"`
+	Level       int    `json:"level"`
+	BaseSalary  int    `json:"base_salary"`
+	AgreementID string `json:"agreement_id"`
 }
 
 func (h Handler) PostCategory(c *gin.Context) {

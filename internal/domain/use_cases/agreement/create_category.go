@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/robertobouses/blue-salary/internal/domain"
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
 )
@@ -12,11 +13,17 @@ func (a AppService) CreateCategory(ctx context.Context, input agreement.Category
 	log.Printf("usecase: creating category with name: %s, level: %d, base salary: %d, agreement ID: %s",
 		input.Name, input.Level, input.BaseSalary, input.AgreementID)
 
+	agreementID, err := uuid.Parse(input.AgreementID)
+	if err != nil {
+		log.Printf("usecase: invalid agreementID format: %v", err)
+		return err
+	}
+
 	category := domain.Category{
 		Name:        input.Name,
 		Level:       input.Level,
 		BaseSalary:  input.BaseSalary,
-		AgreementID: input.AgreementID,
+		AgreementID: agreementID,
 	}
 
 	if err := a.agreementRepo.SaveCategory(ctx, category); err != nil {

@@ -24,3 +24,11 @@ type Payroll struct {
 	SSContributions        int
 	NetSalary              int
 }
+
+type PayrollIncident struct {
+	ID          uuid.UUID
+	PayrollID   uuid.UUID
+	Description string
+	StartDate   time.Time
+	EndDate     time.Time
+}

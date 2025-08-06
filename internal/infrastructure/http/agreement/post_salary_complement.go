@@ -5,14 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type SalaryComplementRequest struct {
-	Name        string    `json:"name"`
-	Type        string    `json:"type"`
-	Value       int       `json:"value"`
-	AgreementID uuid.UUID `json:"agreement_id"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Value       int    `json:"value"`
+	AgreementID string `json:"agreement_id"`
 }
 
 func (h Handler) PostSalaryComplement(c *gin.Context) {

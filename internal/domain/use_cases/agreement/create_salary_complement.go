@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/robertobouses/blue-salary/internal/domain"
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
 )
@@ -14,11 +15,17 @@ func (a AppService) CreateSalaryComplement(ctx context.Context, input agreement.
 		input.Name, input.Type, input.Value, input.AgreementID,
 	)
 
+	agreementID, err := uuid.Parse(input.AgreementID)
+	if err != nil {
+		log.Printf("usecase: invalid agreementID format: %v", err)
+		return err
+	}
+
 	salaryComplement := domain.SalaryComplement{
 		Name:        input.Name,
 		Type:        input.Type,
 		Value:       input.Value,
-		AgreementID: input.AgreementID,
+		AgreementID: agreementID,
 	}
 
 	if err := a.agreementRepo.SaveSalaryComplement(ctx, salaryComplement); err != nil {
