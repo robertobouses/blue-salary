@@ -10,29 +10,35 @@ import (
 	calcsalary "github.com/robertobouses/calcsalary/domain"
 )
 
-func (a AppService) CalculatePayrollByID(ctx context.Context, employeeID uuid.UUID) (domain.Payroll, error) {
+func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeIDstring string) (domain.Payroll, error) {
+
+	employeeID, err := uuid.Parse(employeeIDstring)
+	if err != nil {
+		log.Printf("usecase: invalid payroll_id format: %v", err)
+		return domain.Payroll{}, err
+	}
 
 	employee, err := a.employeeRepo.FindEmployeeByID(employeeID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByID, error Find Employee by ID: %v", err)
+		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Employee by ID: %v", err)
 		return domain.Payroll{}, err
 	}
 
 	category, err := a.agreementRepo.FindCategoryByID(employee.CategoryID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByID, error Find Category by ID: %v", err)
+		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Category by ID: %v", err)
 		return domain.Payroll{}, err
 	}
 
 	agreement, err := a.agreementRepo.FindAgreementByID(category.AgreementID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByID, error Find Agreement by ID: %v", err)
+		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Agreement by ID: %v", err)
 		return domain.Payroll{}, err
 	}
 
 	salaryComplements, err := a.agreementRepo.FindSalaryComplementsByID(category.AgreementID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByID, error Find Salary Complements by ID: %v", err)
+		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Salary Complements by ID: %v", err)
 		return domain.Payroll{}, err
 	}
 
@@ -43,7 +49,7 @@ func (a AppService) CalculatePayrollByID(ctx context.Context, employeeID uuid.UU
 
 	model145, err := a.model145Repo.FindModel145ByEmployeeID(ctx, employeeID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByID, error Find Model145 by Employee ID: %v", err)
+		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Model145 by Employee ID: %v", err)
 		return domain.Payroll{}, err
 	}
 
@@ -89,6 +95,11 @@ func (a AppService) CalculatePayrollByID(ctx context.Context, employeeID uuid.UU
 
 	fmt.Printf("Net Salary: %d\n", payroll.NetSalary)
 	fmt.Printf("IRPF: %d\n", payroll.IrpfAmount)
+
+	if err := a.payrollRepo.SavePayroll(ctx, payroll); err != nil {
+		log.Printf("usecase: failed to save payroll incident: %v", err)
+		return domain.Payroll{}, err
+	}
 
 	return payroll, nil
 }

@@ -57,6 +57,7 @@ func (s *Server) Run(port string) error {
 
 	payroll := s.engine.Group("/payroll")
 	payroll.POST("/incident", s.payroll.PostPayrollIncident)
+	payroll.POST("/calculate", s.payroll.PostCalculatePayrollByEmployeeID)
 
 	log.Printf("running api at %s port\n", port)
 	return s.engine.Run(fmt.Sprintf(":%s", port))
