@@ -15,7 +15,9 @@ CREATE TABLE blues.payroll (
     irpf_amount INTEGER NOT NULL,
     irpf_effective_rate INTEGER NOT NULL,
     ss_contributions INTEGER NOT NULL,
-    net_salary INTEGER NOT NULL
+    net_salary INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 COMMIT;

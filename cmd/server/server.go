@@ -69,7 +69,7 @@ var ServerCmd = &cobra.Command{
 		agreementApp := appAgreement.NewApp(agreementRepo)
 		employeeApp := appEmployee.NewApp(employeeRepo)
 		model145App := appModel145.NewApp(model145Repo)
-		payrollApp := appPayroll.NewApp(payrollRepo)
+		payrollApp := appPayroll.NewApp(payrollRepo, employeeRepo, agreementRepo, model145Repo)
 
 		agreementHandler := handlerAgreement.NewHandler(&agreementApp)
 		employeeHandler := handlerEmployee.NewHandler(employeeApp)

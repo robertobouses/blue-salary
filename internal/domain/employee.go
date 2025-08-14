@@ -7,4 +7,6 @@ type Employee struct {
 	FirstName      string
 	LastName       string
 	SecondLastName string
+	GrossSalary    int
+	CategoryID     uuid.UUID
 }

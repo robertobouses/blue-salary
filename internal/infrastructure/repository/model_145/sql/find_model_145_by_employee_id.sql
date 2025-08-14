@@ -1,4 +1,5 @@
-INSERT INTO blues.model_145 (
+SELECT 
+    id,
     employee_id,
     marital_status,
     has_spouse,
@@ -12,6 +13,5 @@ INSERT INTO blues.model_145 (
     mobility_reduced,
     has_disabled_ascendants,
     other_deductions
-) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-);
+FROM blues.model_145
+WHERE employee_id = $1;

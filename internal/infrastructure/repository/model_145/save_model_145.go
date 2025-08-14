@@ -21,6 +21,7 @@ func (r *Repository) SaveModel145(ctx context.Context, model145 domain.Model145)
 		model145.DisabilityPercentage,
 		model145.IsSingleParentFamily,
 		model145.MobilityReduced,
+		model145.HasDisabledAscendants,
 		model145.OtherDeductions,
 	)
 

@@ -19,6 +19,7 @@ type Model145Request struct {
 	DisabilityPercentage   int    `json:"disability_percentage"`
 	IsSingleParentFamily   bool   `json:"is_single_parent_family"`
 	MobilityReduced        bool   `json:"mobility_reduced"`
+	HasDisabledAscendants  bool   `json:"has_disabled_ascendants"`
 	OtherDeductions        string `json:"other_deductions"`
 }
 

@@ -6,7 +6,9 @@ CREATE TABLE blues.payroll_incident (
     description TEXT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    FOREIGN KEY (payroll_id) REFERENCES payroll(id)
+    FOREIGN KEY (payroll_id) REFERENCES payroll(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 COMMIT;

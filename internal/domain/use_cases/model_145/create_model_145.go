@@ -29,6 +29,7 @@ func (a AppService) CreateModel145(ctx context.Context, input model_145.Model145
 		DisabilityPercentage:   input.DisabilityPercentage,
 		IsSingleParentFamily:   input.IsSingleParentFamily,
 		MobilityReduced:        input.MobilityReduced,
+		HasDisabledAscendants:  input.HasDisabledAscendants,
 		OtherDeductions:        input.OtherDeductions,
 	}
 

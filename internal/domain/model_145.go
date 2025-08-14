@@ -17,5 +17,6 @@ type Model145 struct {
 	DisabilityPercentage   int
 	IsSingleParentFamily   bool
 	MobilityReduced        bool
+	HasDisabledAscendants  bool
 	OtherDeductions        string
 }

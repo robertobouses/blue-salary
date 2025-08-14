@@ -11,6 +11,8 @@ type EmployeeRequest struct {
 	FirstName      string `json:"first_name"`
 	LastName       string `json:"last_name"`
 	SecondLastName string `json:"second_last_name"`
+	GrossSalary    int    `json:"gross_salary"`
+	CategoryID     string `json:"category_id"`
 }
 
 func (h Handler) PostEmployee(c *gin.Context) {
