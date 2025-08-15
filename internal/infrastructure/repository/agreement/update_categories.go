@@ -15,10 +15,11 @@ func (r *Repository) UpdateCategories(ctx context.Context, agreementID uuid.UUID
 	}
 
 	for _, category := range categories {
-		_, err := r.saveCategories.ExecContext(
+		_, err := r.saveCategory.ExecContext(
 			ctx,
-			category.ID,
 			category.Name,
+			category.Level,
+			category.BaseSalary,
 			agreementID,
 		)
 		if err != nil {

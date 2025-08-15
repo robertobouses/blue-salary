@@ -32,11 +32,16 @@ func (h Handler) UpdateAgreement(c *gin.Context) {
 		ID:                    req.ID,
 		Name:                  req.Name,
 		NumberOfExtraPayments: req.NumberOfExtraPayments,
-		Categories:            req.Categories,
-		SalaryComplements:     req.SalaryComplements,
 	}
+	categories := req.Categories
+	salaryComplements := req.SalaryComplements
 
-	if err := h.app.UpdateFullAgreement(c.Request.Context(), agreement); err != nil {
+	if err := h.app.UpdateFullAgreement(
+		c.Request.Context(),
+		agreement,
+		categories,
+		salaryComplements,
+	); err != nil {
 		log.Printf("http: failed to update agreement: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not update agreement"})
 		return

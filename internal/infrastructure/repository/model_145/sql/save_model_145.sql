@@ -10,7 +10,8 @@ INSERT INTO blues.model_145 (
     disability_percentage,
     is_single_parent_family,
     mobility_reduced,
+    has_disabled_ascendants,
     other_deductions
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 );

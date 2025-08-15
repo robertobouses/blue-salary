@@ -10,20 +10,23 @@ import (
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/employee"
 	"github.com/robertobouses/blue-salary/internal/infrastructure/http/model_145"
+	"github.com/robertobouses/blue-salary/internal/infrastructure/http/payroll"
 )
 
 type Server struct {
 	agreement agreement.Handler
 	employee  employee.Handler
 	model145  model_145.Handler
+	payroll   payroll.Handler
 	engine    *gin.Engine
 }
 
-func NewServer(agreement agreement.Handler, employee employee.Handler, model145 model_145.Handler) Server {
+func NewServer(agreement agreement.Handler, employee employee.Handler, model145 model_145.Handler, payroll payroll.Handler) Server {
 	return Server{
 		agreement: agreement,
 		employee:  employee,
 		model145:  model145,
+		payroll:   payroll,
 		engine:    gin.Default(),
 	}
 }
@@ -43,6 +46,7 @@ func (s *Server) Run(port string) error {
 	agreement.POST("/category", s.agreement.PostCategory)
 	agreement.POST("/complement", s.agreement.PostSalaryComplement)
 	agreement.PATCH("/update", s.agreement.UpdateAgreement)
+	agreement.GET("/all", s.agreement.GetAgreements)
 
 	employee := s.engine.Group("/employee")
 	employee.POST("/create", s.employee.PostEmployee)
@@ -50,6 +54,10 @@ func (s *Server) Run(port string) error {
 
 	model145 := s.engine.Group("/model145")
 	model145.POST("/create", s.model145.PostModel145)
+
+	payroll := s.engine.Group("/payroll")
+	payroll.POST("/incident", s.payroll.PostPayrollIncident)
+	payroll.POST("/calculate", s.payroll.PostCalculatePayrollByEmployeeID)
 
 	log.Printf("running api at %s port\n", port)
 	return s.engine.Run(fmt.Sprintf(":%s", port))

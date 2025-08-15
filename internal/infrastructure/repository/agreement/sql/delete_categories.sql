@@ -1,2 +1,2 @@
-DELETE FROM blues.categories 
-WHERE agreement_id = $1
+DELETE FROM blues.category 
+WHERE agreement_id = $1;

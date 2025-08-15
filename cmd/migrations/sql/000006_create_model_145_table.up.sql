@@ -13,7 +13,10 @@ CREATE TABLE blues.model_145 (
     disability_percentage INTEGER NOT NULL,
     is_single_parent_family BOOLEAN NOT NULL,
     mobility_reduced BOOLEAN NOT NULL,
-    other_deductions TEXT
+    has_disabled_ascendants BOOLEAN NOT NULL,
+    other_deductions TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 

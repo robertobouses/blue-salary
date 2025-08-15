@@ -14,6 +14,9 @@ type AgreementRepository interface {
 	UpdateAgreement(c context.Context, agreement domain.Agreement) error
 	UpdateCategories(c context.Context, agreementID uuid.UUID, categories []domain.Category) error
 	UpdateSalaryComplements(c context.Context, agreementID uuid.UUID, complements []domain.SalaryComplement) error
+	FindAgreements() ([]domain.Agreement, error)
+	FindCategoriesByAgreementID(agreementID uuid.UUID) ([]domain.Category, error)
+	FindSalaryComplementsByID(agreementID uuid.UUID) ([]domain.SalaryComplement, error)
 }
 
 func NewApp(AgreementRepository AgreementRepository) AppService {

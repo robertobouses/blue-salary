@@ -12,8 +12,8 @@ var saveAgreementQuery string
 //go:embed sql/find_agreement_by_id.sql
 var findAgreementByIDQuery string
 
-//go:embed sql/find_categories_by_id.sql
-var findCategoriesByIDQuery string
+//go:embed sql/find_categories_by_agreement_id.sql
+var findCategoriesByAgreementIDQuery string
 
 //go:embed sql/find_salary_complements_by_id.sql
 var findSalaryComplementsByIDQuery string
@@ -21,8 +21,8 @@ var findSalaryComplementsByIDQuery string
 //go:embed sql/update_agreement.sql
 var updateAgreementQuery string
 
-//go:embed sql/save_categories.sql
-var saveCategoriesQuery string
+//go:embed sql/save_category.sql
+var saveCategoryQuery string
 
 //go:embed sql/save_salary_complements.sql
 var saveSalaryComplementsQuery string
@@ -33,6 +33,12 @@ var deleteCategoriesQuery string
 //go:embed sql/delete_salary_complements.sql
 var deleteSalaryComplementsQuery string
 
+//go:embed sql/find_agreement.sql
+var findAgreementQuery string
+
+//go:embed sql/find_category_by_id.sql
+var findCategoryByIDQuery string
+
 func NewRepository(db *sql.DB) (*Repository, error) {
 	saveAgreementStmt, err := db.Prepare(saveAgreementQuery)
 	if err != nil {
@@ -42,7 +48,7 @@ func NewRepository(db *sql.DB) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
-	findCategoriesByIDStmt, err := db.Prepare(findCategoriesByIDQuery)
+	findCategoriesByAgreementIDStmt, err := db.Prepare(findCategoriesByAgreementIDQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +60,7 @@ func NewRepository(db *sql.DB) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
-	saveCategoriesStmt, err := db.Prepare(saveCategoriesQuery)
+	saveCategoryStmt, err := db.Prepare(saveCategoryQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -70,30 +76,42 @@ func NewRepository(db *sql.DB) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
+	findAgreementsStmt, err := db.Prepare(findAgreementQuery)
+	if err != nil {
+		return nil, err
+	}
+	findCategoryByIDStmt, err := db.Prepare(findCategoryByIDQuery)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Repository{
-		db:                       db,
-		saveAgreement:            saveAgreementStmt,
-		findAgreementByID:        findAgreementByIDStmt,
-		findCategoriesByID:       findCategoriesByIDStmt,
-		findSalaryComplementByID: findSalaryComplementByIDStmt,
-		updateAgreement:          updateAgreementStmt,
-		saveCategories:           saveCategoriesStmt,
-		saveSalaryComplements:    saveSalaryComplementStmt,
-		deleteCategories:         deleteCategoriesStmt,
-		deleteSalaryComplements:  deleteSalaryComplementsStmt,
+		db:                          db,
+		saveAgreement:               saveAgreementStmt,
+		findAgreementByID:           findAgreementByIDStmt,
+		findCategoriesByAgreementID: findCategoriesByAgreementIDStmt,
+		findSalaryComplementByID:    findSalaryComplementByIDStmt,
+		updateAgreement:             updateAgreementStmt,
+		saveCategory:                saveCategoryStmt,
+		saveSalaryComplements:       saveSalaryComplementStmt,
+		deleteCategories:            deleteCategoriesStmt,
+		deleteSalaryComplements:     deleteSalaryComplementsStmt,
+		findAgreement:               findAgreementsStmt,
+		findCategoryByID:            findCategoryByIDStmt,
 	}, nil
 }
 
 type Repository struct {
-	db                       *sql.DB
-	saveAgreement            *sql.Stmt
-	findAgreementByID        *sql.Stmt
-	findCategoriesByID       *sql.Stmt
-	findSalaryComplementByID *sql.Stmt
-	updateAgreement          *sql.Stmt
-	saveCategories           *sql.Stmt
-	saveSalaryComplements    *sql.Stmt
-	deleteCategories         *sql.Stmt
-	deleteSalaryComplements  *sql.Stmt
+	db                          *sql.DB
+	saveAgreement               *sql.Stmt
+	findAgreementByID           *sql.Stmt
+	findCategoriesByAgreementID *sql.Stmt
+	findSalaryComplementByID    *sql.Stmt
+	updateAgreement             *sql.Stmt
+	saveCategory                *sql.Stmt
+	saveSalaryComplements       *sql.Stmt
+	deleteCategories            *sql.Stmt
+	deleteSalaryComplements     *sql.Stmt
+	findAgreement               *sql.Stmt
+	findCategoryByID            *sql.Stmt
 }

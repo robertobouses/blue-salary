@@ -13,6 +13,8 @@ func (r *Repository) SaveEmployee(ctx context.Context, employee domain.Employee)
 		employee.FirstName,
 		employee.LastName,
 		employee.SecondLastName,
+		employee.GrossSalary,
+		employee.CategoryID,
 	)
 
 	if err != nil {

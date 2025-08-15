@@ -8,8 +8,6 @@ type Agreement struct {
 	ID                    uuid.UUID
 	Name                  string
 	NumberOfExtraPayments int
-	Categories            []Category
-	SalaryComplements     []SalaryComplement
 }
 
 type Category struct {
