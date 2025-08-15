@@ -1,8 +1,8 @@
 SELECT
 id,
 name,
-type,
-value,
+level,
+base_salary,
 agreement_id
-FROM blues.salary_complement
+FROM blues.category
 WHERE agreement_id=$1

@@ -1,6 +1,5 @@
 SELECT
 id,
-first_name,
-second_name,
-second_last_name
-FROM blues.employee
+name,
+number_of_extra_payments
+FROM blues.agreement

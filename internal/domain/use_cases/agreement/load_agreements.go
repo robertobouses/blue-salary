@@ -1,33 +1,70 @@
 package agreement
 
 import (
-	"github.com/robertobouses/blue-salary/internal/domain"
+	"log"
+
+	httpagreement "github.com/robertobouses/blue-salary/internal/infrastructure/http/agreement"
 )
 
-func (a *AppService) LoadAgreements() ([]*domain.Agreement, error) {
+func (a *AppService) LoadAgreements() ([]httpagreement.AgreementResponse, error) {
 	agreementsRaw, err := a.agreementRepo.FindAgreements()
 	if err != nil {
+		log.Printf("[LoadAgreements] Error fetching agreements: %v", err)
 		return nil, err
 	}
 
-	agreements := make([]*domain.Agreement, len(agreementsRaw))
-	for i := range agreementsRaw {
-		agreement := agreementsRaw[i]
-		categories, err := a.agreementRepo.FindCategoriesByID(agreement.ID)
+	log.Printf("[LoadAgreements] Found %d agreements", len(agreementsRaw))
+
+	responses := make([]httpagreement.AgreementResponse, 0, len(agreementsRaw))
+
+	for _, agr := range agreementsRaw {
+		log.Printf("[LoadAgreements] Processing agreement ID=%v Name=%v", agr.ID, agr.Name)
+
+		categories, err := a.agreementRepo.FindCategoriesByAgreementID(agr.ID)
 		if err != nil {
+			log.Printf("[LoadAgreements] Error fetching categories for agreement %v: %v", agr.ID, err)
 			return nil, err
 		}
+		log.Printf("[LoadAgreements] Found %d categories for agreement %v", len(categories), agr.ID)
 
-		complements, err := a.agreementRepo.FindSalaryComplementsByID(agreement.ID)
-		if err != nil {
-			return nil, err
+		categoryResponses := make([]httpagreement.CategoryResponse, len(categories))
+		for i, cat := range categories {
+			log.Printf("[LoadAgreements] Category %v: Name=%v, Level=%v, BaseSalary=%v", cat.ID, cat.Name, cat.Level, cat.BaseSalary)
+			categoryResponses[i] = httpagreement.CategoryResponse{
+				ID:         cat.ID,
+				Name:       cat.Name,
+				Level:      cat.Level,
+				BaseSalary: cat.BaseSalary,
+			}
 		}
 
-		agreement.Categories = categories
-		agreement.SalaryComplements = complements
+		complements, err := a.agreementRepo.FindSalaryComplementsByID(agr.ID)
+		if err != nil {
+			log.Printf("[LoadAgreements] Error fetching salary complements for agreement %v: %v", agr.ID, err)
+			return nil, err
+		}
+		log.Printf("[LoadAgreements] Found %d salary complements for agreement %v", len(complements), agr.ID)
 
-		agreements[i] = &agreement
+		complementResponses := make([]httpagreement.SalaryComplementResponse, len(complements))
+		for i, comp := range complements {
+			log.Printf("[LoadAgreements] SalaryComplement %v: Name=%v, Type=%v, Value=%v", comp.ID, comp.Name, comp.Type, comp.Value)
+			complementResponses[i] = httpagreement.SalaryComplementResponse{
+				ID:    comp.ID,
+				Name:  comp.Name,
+				Type:  comp.Type,
+				Value: comp.Value,
+			}
+		}
+
+		responses = append(responses, httpagreement.AgreementResponse{
+			ID:                    agr.ID,
+			Name:                  agr.Name,
+			NumberOfExtraPayments: agr.NumberOfExtraPayments,
+			Categories:            categoryResponses,
+			SalaryComplements:     complementResponses,
+		})
 	}
 
-	return agreements, nil
+	log.Printf("[LoadAgreements] Returning %d agreement responses", len(responses))
+	return responses, nil
 }

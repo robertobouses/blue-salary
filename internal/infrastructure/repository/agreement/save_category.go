@@ -8,7 +8,7 @@ import (
 )
 
 func (r *Repository) SaveCategory(ctx context.Context, category domain.Category) error {
-	_, err := r.saveAgreement.ExecContext(
+	_, err := r.saveCategory.ExecContext(
 		ctx,
 		category.Name,
 		category.Level,

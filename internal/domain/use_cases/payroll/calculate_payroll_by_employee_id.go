@@ -81,7 +81,6 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	payroll := domain.Payroll{
 		EmployeeID:             employeeID,
 		BaseSalary:             output.BaseSalary,
-		SalaryComplements:      output.SalaryComplements,
 		PersonalComplement:     output.PersonalComplement,
 		ExtraHourPay:           output.ExtraHoursPay,
 		MonthlyGrossWithExtras: output.MonthlyGrossWithExtras,
@@ -100,6 +99,17 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 		log.Printf("usecase: failed to save payroll incident: %v", err)
 		return domain.Payroll{}, err
 	}
-
+	for _, sc := range salaryComplements {
+		payrollSC := domain.PayrollSalaryComplement{
+			PayrollID: payroll.ID,
+			Name:      sc.Name,
+			Type:      sc.Type,
+			Value:     sc.Value,
+		}
+		if err := a.payrollRepo.SavePayrollSalaryComplement(ctx, payrollSC); err != nil {
+			log.Printf("usecase: failed to save payroll salary complement: %v", err)
+			return domain.Payroll{}, err
+		}
+	}
 	return payroll, nil
 }

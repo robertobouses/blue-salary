@@ -21,7 +21,7 @@ func (r *Repository) UpdateAgreement(ctx context.Context, agreement domain.Agree
 	if agreement.Name == "" {
 		agreement.Name = findedAgreement.Name
 	}
-	if agreement.NumberOfExtraPayments == 0 {
+	if agreement.NumberOfExtraPayments < 0 {
 		agreement.NumberOfExtraPayments = findedAgreement.NumberOfExtraPayments
 	}
 

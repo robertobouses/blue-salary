@@ -31,44 +31,12 @@ type SalaryComplementResponse struct {
 }
 
 func (h *Handler) GetAgreements(c *gin.Context) {
-	agreements, err := h.app.LoadAgreements()
+	agreementsResponse, err := h.app.LoadAgreements()
 	if err != nil {
 		log.Printf("Error loading agreements: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get agreements"})
 		return
 	}
 
-	var responses []AgreementResponse
-
-	for _, agreement := range agreements {
-		var categoryResponses []CategoryResponse
-		for _, cat := range agreement.Categories {
-			categoryResponses = append(categoryResponses, CategoryResponse{
-				ID:         cat.ID,
-				Name:       cat.Name,
-				Level:      cat.Level,
-				BaseSalary: cat.BaseSalary,
-			})
-		}
-
-		var complementResponses []SalaryComplementResponse
-		for _, comp := range agreement.SalaryComplements {
-			complementResponses = append(complementResponses, SalaryComplementResponse{
-				ID:    comp.ID,
-				Name:  comp.Name,
-				Type:  comp.Type,
-				Value: comp.Value,
-			})
-		}
-
-		responses = append(responses, AgreementResponse{
-			ID:                    agreement.ID,
-			Name:                  agreement.Name,
-			NumberOfExtraPayments: agreement.NumberOfExtraPayments,
-			Categories:            categoryResponses,
-			SalaryComplements:     complementResponses,
-		})
-	}
-
-	c.JSON(http.StatusOK, responses)
+	c.JSON(http.StatusOK, agreementsResponse)
 }

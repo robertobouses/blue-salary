@@ -15,7 +15,7 @@ type AgreementRepository interface {
 	UpdateCategories(c context.Context, agreementID uuid.UUID, categories []domain.Category) error
 	UpdateSalaryComplements(c context.Context, agreementID uuid.UUID, complements []domain.SalaryComplement) error
 	FindAgreements() ([]domain.Agreement, error)
-	FindCategoriesByID(agreementID uuid.UUID) ([]domain.Category, error)
+	FindCategoriesByAgreementID(agreementID uuid.UUID) ([]domain.Category, error)
 	FindSalaryComplementsByID(agreementID uuid.UUID) ([]domain.SalaryComplement, error)
 }
 

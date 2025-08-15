@@ -17,7 +17,6 @@ func (r *Repository) UpdateSalaryComplements(ctx context.Context, agreementID uu
 	for _, complement := range complements {
 		_, err := r.saveSalaryComplements.ExecContext(
 			ctx,
-			complement.ID,
 			complement.Name,
 			complement.Type,
 			complement.Value,

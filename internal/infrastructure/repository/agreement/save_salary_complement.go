@@ -8,7 +8,7 @@ import (
 )
 
 func (r *Repository) SaveSalaryComplement(ctx context.Context, salarycomplement domain.SalaryComplement) error {
-	_, err := r.saveAgreement.ExecContext(
+	_, err := r.saveSalaryComplements.ExecContext(
 		ctx,
 		salarycomplement.Name,
 		salarycomplement.Type,

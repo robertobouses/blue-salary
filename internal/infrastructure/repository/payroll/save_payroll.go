@@ -15,7 +15,6 @@ func (r *Repository) SavePayroll(ctx context.Context, payroll domain.Payroll) er
 		payroll.EndDate,
 		payroll.ExtraPayment,
 		payroll.BaseSalary,
-		payroll.SalaryComplements,
 		payroll.PersonalComplement,
 		payroll.ExtraHourPay,
 		payroll.MonthlyGrossWithExtras,
