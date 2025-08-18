@@ -9,6 +9,7 @@ import (
 type App interface {
 	CreatePayrollIncident(ctx context.Context, req PayrollIncidentRequest) error
 	CalculatePayrollByEmployeeID(ctx context.Context, employeeID string) (domain.Payroll, error)
+	CalculatePersonalComplementByEmployeeID(ctx context.Context, employeeIDstring string) (int, error)
 }
 
 func NewHandler(app App) Handler {

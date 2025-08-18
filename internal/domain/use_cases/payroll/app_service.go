@@ -9,7 +9,7 @@ import (
 
 type PayrollRepository interface {
 	SavePayrollIncident(c context.Context, payrollIncident domain.PayrollIncident) error
-	SavePayroll(ctx context.Context, payroll domain.Payroll) error
+	SavePayroll(ctx context.Context, payroll *domain.Payroll) error
 	SavePayrollSalaryComplement(ctx context.Context, payrollSalaryComplement domain.PayrollSalaryComplement) error
 }
 

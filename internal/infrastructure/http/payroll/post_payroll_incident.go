@@ -9,7 +9,7 @@ import (
 )
 
 type PayrollIncidentRequest struct {
-	PayrollID   string    `json:"payroll_id" binding:"required,uuid"`
+	EmployeeID  string    `json:"employee_id" binding:"required,uuid"`
 	Description string    `json:"description" binding:"required"`
 	StartDate   time.Time `json:"start_date" binding:"required"`
 	EndDate     time.Time `json:"end_date" binding:"required"`

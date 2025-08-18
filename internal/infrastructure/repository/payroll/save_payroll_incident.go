@@ -10,7 +10,7 @@ import (
 func (r *Repository) SavePayrollIncident(ctx context.Context, payrollIncident domain.PayrollIncident) error {
 	_, err := r.savePayrollIncident.ExecContext(
 		ctx,
-		payrollIncident.PayrollID,
+		payrollIncident.EmployeeID,
 		payrollIncident.Description,
 		payrollIncident.StartDate,
 		payrollIncident.EndDate,

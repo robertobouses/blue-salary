@@ -34,7 +34,7 @@ type PayrollSalaryComplement struct {
 
 type PayrollIncident struct {
 	ID          uuid.UUID
-	PayrollID   uuid.UUID
+	EmployeeID  uuid.UUID
 	Description string
 	StartDate   time.Time
 	EndDate     time.Time

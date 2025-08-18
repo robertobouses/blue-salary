@@ -6,28 +6,27 @@ import (
 	"log"
 
 	"github.com/google/uuid"
-	"github.com/robertobouses/blue-salary/internal/domain"
 	calcsalary "github.com/robertobouses/calcsalary/domain"
 )
 
-func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeIDstring string) (domain.Payroll, error) {
+func (a AppService) CalculatePersonalComplementByEmployeeID(ctx context.Context, employeeIDstring string) (int, error) {
 	log.Printf("usecase: starting payroll calculation for employee_id=%s", employeeIDstring)
 
 	employeeID, err := uuid.Parse(employeeIDstring)
 	if err != nil {
 		log.Printf("usecase: invalid payroll_id format: %v", err)
-		return domain.Payroll{}, err
+		return 0, err
 	}
 
 	employee, err := a.employeeRepo.FindEmployeeByID(employeeID)
 	if err != nil {
 		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Employee by ID: %v", err)
-		return domain.Payroll{}, err
+		return 0, err
 	}
 
 	if employee.CategoryID == uuid.Nil {
 		log.Printf("usecase error: employee %s has no category assigned", employee.ID)
-		return domain.Payroll{}, fmt.Errorf("employee %s has no category assigned", employee.ID)
+		return 0, fmt.Errorf("employee %s has no category assigned", employee.ID)
 	}
 
 	log.Printf("usecase: found employee ID=%s | Name=%s %s %s | CategoryID=%s",
@@ -36,11 +35,11 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	category, err := a.agreementRepo.FindCategoryByID(employee.CategoryID)
 	if err != nil {
 		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Category by ID: %v", err)
-		return domain.Payroll{}, err
+		return 0, err
 	}
 	if category.AgreementID == uuid.Nil {
 		log.Printf("usecase error: category %s has no agreement assigned", category.ID)
-		return domain.Payroll{}, fmt.Errorf("category %s has no agreement assigned", category.ID)
+		return 0, fmt.Errorf("category %s has no agreement assigned", category.ID)
 	}
 
 	log.Printf("usecase: found category ID=%s | BaseSalary=%d | AgreementID=%s",
@@ -49,7 +48,7 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	agreement, err := a.agreementRepo.FindAgreementByID(category.AgreementID)
 	if err != nil {
 		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Agreement by ID: %v", err)
-		return domain.Payroll{}, err
+		return 0, err
 	}
 
 	log.Printf("usecase: found agreement ID=%s | ExtraPayments=%d",
@@ -58,7 +57,7 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	salaryComplements, err := a.agreementRepo.FindSalaryComplementsByID(category.AgreementID)
 	if err != nil {
 		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Salary Complements by ID: %v", err)
-		return domain.Payroll{}, err
+		return 0, err
 	}
 
 	log.Printf("usecase: found %d salary complements", len(salaryComplements))
@@ -74,7 +73,7 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	model145, err := a.model145Repo.FindModel145ByEmployeeID(ctx, employeeID)
 	if err != nil {
 		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Model145 by Employee ID: %v", err)
-		return domain.Payroll{}, err
+		return 0, err
 	}
 
 	log.Printf("usecase: found model145 | Children=%d | Disability=%d%% | MobilityReduced=%v | Ascendants=%d | DisabledAscendants=%v",
@@ -82,7 +81,7 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 
 	if category.BaseSalary <= 0 {
 		log.Printf("usecase error: category %s has BaseSalary <= 0, cannot calculate payroll", category.ID)
-		return domain.Payroll{}, fmt.Errorf("category %s has invalid BaseSalary: %d", category.ID, category.BaseSalary)
+		return 0, fmt.Errorf("category %s has invalid BaseSalary: %d", category.ID, category.BaseSalary)
 	}
 
 	payrollInput := calcsalary.PayrollInput{
@@ -112,51 +111,6 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	payrollInput.PersonalComplement = monthlyPersonalComplement
 	log.Printf("usecase: calculated personal complement=%d", monthlyPersonalComplement)
 
-	output := calcsalary.GeneratePayrollOutput(payrollInput)
-	log.Printf("usecase: generated payroll output=%+v", output)
+	return monthlyPersonalComplement, nil
 
-	payroll := domain.Payroll{
-		EmployeeID:             employeeID,
-		BaseSalary:             output.BaseSalary,
-		PersonalComplement:     output.PersonalComplement,
-		ExtraHourPay:           output.ExtraHoursPay,
-		MonthlyGrossWithExtras: output.MonthlyGrossWithExtras,
-		BCCC:                   output.BaseBCCC,
-		BCCP:                   output.BaseBCCP,
-		IrpfAmount:             output.IrpfAmount,
-		IrpfEffectiveRate:      output.IrpfEffectiveRate,
-		SSContributions:        output.SSContributions.TotalWorker,
-		NetSalary:              output.NetSalary,
-	}
-
-	log.Printf("usecase: payroll entity built | NetSalary=%d | IRPF=%d | SSContributions=%d",
-		payroll.NetSalary, payroll.IrpfAmount, payroll.SSContributions)
-
-	log.Printf("usecase: saving payroll for employee %s with generated payroll ID=%s", employeeID, payroll.ID)
-	log.Printf("usecase: payroll entity details before save: %+v", payroll)
-	log.Printf("usecase: employeeID=%s | CategoryID=%s | AgreementID=%s | SalaryComplements=%+v",
-		employee.ID, category.ID, agreement.ID, salaryComplements)
-
-	if err := a.payrollRepo.SavePayroll(ctx, &payroll); err != nil {
-		log.Printf("usecase: failed to save payroll incident: %v", err)
-		return domain.Payroll{}, err
-	}
-
-	log.Printf("usecase: payroll saved successfully with ID=%s", payroll.ID)
-
-	for _, sc := range salaryComplements {
-		payrollSC := domain.PayrollSalaryComplement{
-			PayrollID: payroll.ID,
-			Name:      sc.Name,
-			Type:      sc.Type,
-			Value:     sc.Value,
-		}
-		if err := a.payrollRepo.SavePayrollSalaryComplement(ctx, payrollSC); err != nil {
-			log.Printf("usecase: failed to save payroll salary complement: %v", err)
-			return domain.Payroll{}, err
-		}
-		log.Printf("usecase: saved payroll salary complement | Name=%s | Value=%d", sc.Name, sc.Value)
-	}
-	log.Printf("usecase: payroll calculation completed successfully for employee_id=%s", employeeIDstring)
-	return payroll, nil
 }

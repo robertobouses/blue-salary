@@ -12,17 +12,17 @@ import (
 func (a AppService) CreatePayrollIncident(ctx context.Context, input payroll.PayrollIncidentRequest) error {
 	log.Printf(
 		"usecase: creating payroll incident for payroll_id: %s | description: %s | start_date: %v | end_date: %v",
-		input.PayrollID, input.Description, input.StartDate, input.EndDate,
+		input.EmployeeID, input.Description, input.StartDate, input.EndDate,
 	)
 
-	payrollID, err := uuid.Parse(input.PayrollID)
+	employeeID, err := uuid.Parse(input.EmployeeID)
 	if err != nil {
 		log.Printf("usecase: invalid payroll_id format: %v", err)
 		return err
 	}
 
 	incident := domain.PayrollIncident{
-		PayrollID:   payrollID,
+		EmployeeID:  employeeID,
 		Description: input.Description,
 		StartDate:   input.StartDate,
 		EndDate:     input.EndDate,
