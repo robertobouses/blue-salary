@@ -7,8 +7,8 @@ import (
 	"github.com/robertobouses/blue-salary/internal/domain"
 )
 
-func (r *Repository) SavePayroll(ctx context.Context, payroll domain.Payroll) error {
-	_, err := r.savePayroll.ExecContext(
+func (r *Repository) SavePayroll(ctx context.Context, payroll *domain.Payroll) error {
+	err := r.savePayroll.QueryRowContext(
 		ctx,
 		payroll.EmployeeID,
 		payroll.StartDate,
@@ -23,12 +23,13 @@ func (r *Repository) SavePayroll(ctx context.Context, payroll domain.Payroll) er
 		payroll.IrpfAmount,
 		payroll.IrpfEffectiveRate,
 		payroll.SSContributions,
-		payroll.NetSalary)
+		payroll.NetSalary,
+	).Scan(&payroll.ID)
 
 	if err != nil {
 		log.Print("Error executing SavePayroll statement:", err)
 		return err
 	}
-
+	log.Printf("repository: payroll saved successfully with generated ID=%s", payroll.ID)
 	return nil
 }

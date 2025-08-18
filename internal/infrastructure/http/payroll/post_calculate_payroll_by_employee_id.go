@@ -15,20 +15,23 @@ func (h Handler) PostCalculatePayrollByEmployeeID(c *gin.Context) {
 	var req CalculatePayrollRequest
 
 	if err := c.BindJSON(&req); err != nil {
-		log.Printf("http: failed to parse PostCalculatePayrollByEmployeeID request: %v", err)
+		log.Printf("http: [payroll] invalid request format in PostCalculatePayrollByEmployeeID: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request format"})
 		return
 	}
 
-	log.Printf("http: received PostCalculatePayrollByEmployeeID request: %+v", req)
+	log.Printf("http: [payroll] received request to calculate payroll for employee_id=%s", req.EmployeeID)
 
 	payroll, err := h.app.CalculatePayrollByEmployeeID(c.Request.Context(), req.EmployeeID)
 	if err != nil {
-		log.Printf("http: failed to create employee: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not create employee"})
+		log.Printf("http: [payroll] error calculating payroll for employee_id=%s: %v", req.EmployeeID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not calculate payroll"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "employee created successfully"})
-	c.JSON(http.StatusCreated, gin.H{"payroll": payroll})
+	log.Printf("http: [payroll] successfully calculated payroll for employee_id=%s", req.EmployeeID)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "payroll calculated successfully",
+		"payroll": payroll,
+	})
 }
