@@ -2,6 +2,7 @@ package payroll
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/robertobouses/blue-salary/internal/domain"
@@ -11,6 +12,7 @@ type PayrollRepository interface {
 	SavePayrollIncident(c context.Context, payrollIncident domain.PayrollIncident) error
 	SavePayroll(ctx context.Context, payroll *domain.Payroll) error
 	SavePayrollSalaryComplement(ctx context.Context, payrollSalaryComplement domain.PayrollSalaryComplement) error
+	FindIncidentByEmployeeID(employeeID uuid.UUID, month time.Time) ([]domain.PayrollIncident, error)
 }
 
 type EmployeeRepository interface {

@@ -4,86 +4,85 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/robertobouses/blue-salary/internal/domain"
 	calcsalary "github.com/robertobouses/calcsalary/domain"
 )
 
-func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeIDstring string) (domain.Payroll, error) {
+const (
+	MonthlyDays = 30
+)
+
+func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeIDstring string, month time.Time) (domain.Payroll, error) {
 	log.Printf("usecase: starting payroll calculation for employee_id=%s", employeeIDstring)
 
 	employeeID, err := uuid.Parse(employeeIDstring)
 	if err != nil {
-		log.Printf("usecase: invalid payroll_id format: %v", err)
-		return domain.Payroll{}, err
+		return domain.Payroll{}, fmt.Errorf("invalid employee ID format: %v", err)
 	}
 
 	employee, err := a.employeeRepo.FindEmployeeByID(employeeID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Employee by ID: %v", err)
-		return domain.Payroll{}, err
+		return domain.Payroll{}, fmt.Errorf("employee not found: %v", err)
 	}
 
 	if employee.CategoryID == uuid.Nil {
-		log.Printf("usecase error: employee %s has no category assigned", employee.ID)
 		return domain.Payroll{}, fmt.Errorf("employee %s has no category assigned", employee.ID)
 	}
 
-	log.Printf("usecase: found employee ID=%s | Name=%s %s %s | CategoryID=%s",
-		employee.ID, employee.FirstName, employee.LastName, employee.SecondLastName, employee.CategoryID)
-
 	category, err := a.agreementRepo.FindCategoryByID(employee.CategoryID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Category by ID: %v", err)
 		return domain.Payroll{}, err
 	}
-	if category.AgreementID == uuid.Nil {
-		log.Printf("usecase error: category %s has no agreement assigned", category.ID)
-		return domain.Payroll{}, fmt.Errorf("category %s has no agreement assigned", category.ID)
-	}
 
-	log.Printf("usecase: found category ID=%s | BaseSalary=%d | AgreementID=%s",
-		category.ID, category.BaseSalary, category.AgreementID)
+	if category.BaseSalary <= 0 {
+		return domain.Payroll{}, fmt.Errorf("category %s has invalid BaseSalary: %d", category.ID, category.BaseSalary)
+	}
 
 	agreement, err := a.agreementRepo.FindAgreementByID(category.AgreementID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Agreement by ID: %v", err)
 		return domain.Payroll{}, err
 	}
-
-	log.Printf("usecase: found agreement ID=%s | ExtraPayments=%d",
-		agreement.ID, agreement.NumberOfExtraPayments)
 
 	salaryComplements, err := a.agreementRepo.FindSalaryComplementsByID(category.AgreementID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Salary Complements by ID: %v", err)
 		return domain.Payroll{}, err
 	}
-
-	log.Printf("usecase: found %d salary complements", len(salaryComplements))
 
 	var salaryComplementsValues []int
 	for _, sc := range salaryComplements {
 		salaryComplementsValues = append(salaryComplementsValues, sc.Value)
 	}
-	if len(salaryComplementsValues) == 0 {
-		log.Printf("usecase warning: employee %s has no salary complements", employee.ID)
-	}
 
 	model145, err := a.model145Repo.FindModel145ByEmployeeID(ctx, employeeID)
 	if err != nil {
-		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Model145 by Employee ID: %v", err)
 		return domain.Payroll{}, err
 	}
 
-	log.Printf("usecase: found model145 | Children=%d | Disability=%d%% | MobilityReduced=%v | Ascendants=%d | DisabledAscendants=%v",
-		model145.ChildrenCount, model145.DisabilityPercentage, model145.MobilityReduced, model145.AscendantsCount, model145.HasDisabledAscendants)
-
-	if category.BaseSalary <= 0 {
-		log.Printf("usecase error: category %s has BaseSalary <= 0, cannot calculate payroll", category.ID)
-		return domain.Payroll{}, fmt.Errorf("category %s has invalid BaseSalary: %d", category.ID, category.BaseSalary)
+	incidents, err := a.LoadIncidentByEmployeeID(employeeID, month)
+	if err != nil {
+		return domain.Payroll{}, err
 	}
+
+	daysOff := 0
+	for _, inc := range incidents {
+		days := int(inc.EndDate.Sub(inc.StartDate).Hours()/24) + 1
+		daysOff += days
+	}
+
+	reductionFactor := 1.0
+	if daysOff > 0 {
+		if daysOff >= MonthlyDays {
+			reductionFactor = 0
+		} else {
+			reductionFactor = float64(MonthlyDays-daysOff) / float64(MonthlyDays)
+		}
+	}
+
+	// reducedBase := int(float64(category.BaseSalary) * reductionFactor)
+	// reducedComplements := applyFactor(salaryComplementsValues, reductionFactor)
 
 	payrollInput := calcsalary.PayrollInput{
 		BaseSalary:            category.BaseSalary,
@@ -105,58 +104,60 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 		HasAscendantsOver65:   model145.AscendantsCount > 0,
 		HasDisabledAscendants: model145.HasDisabledAscendants,
 	}
-	log.Printf("usecase: calling calcsalary with input: %+v", payrollInput)
-	log.Printf("usecase: constructed payrollInput=%+v", payrollInput)
 
-	monthlyPersonalComplement := calcsalary.MonthlyPersonalComplement(payrollInput)
-	payrollInput.PersonalComplement = monthlyPersonalComplement
-	log.Printf("usecase: calculated personal complement=%d", monthlyPersonalComplement)
+	log.Println("input before calcsalary.GeneratePayrollOutput(payrollInput)", payrollInput)
+	// monthlyPersonalComplement := calcsalary.MonthlyPersonalComplement(payrollInput)
+	// payrollInput.PersonalComplement = int(float64(monthlyPersonalComplement) * reductionFactor)
 
 	output := calcsalary.GeneratePayrollOutput(payrollInput)
-	log.Printf("usecase: generated payroll output=%+v", output)
+
+	log.Println("output after calcsalary.GeneratePayrollOutput(payrollOutput)", output)
+
+	log.Println("output calcsalary.GeneratePayrollOutput(payrollOutput), output.PersonalComplement", output.PersonalComplement)
+	log.Println("output calcsalary.GeneratePayrollOutput(payrollOutput), output.PersonalComplement with reduction", int(float64(output.PersonalComplement)*reductionFactor))
 
 	payroll := domain.Payroll{
 		EmployeeID:             employeeID,
-		BaseSalary:             output.BaseSalary,
-		PersonalComplement:     output.PersonalComplement,
+		BaseSalary:             int(float64(output.BaseSalary) * reductionFactor),
+		SalaryComplements:      applyFactor(output.SalaryComplements, reductionFactor),
+		PersonalComplement:     int(float64(output.PersonalComplement) * reductionFactor),
 		ExtraHourPay:           output.ExtraHoursPay,
-		MonthlyGrossWithExtras: output.MonthlyGrossWithExtras,
-		BCCC:                   output.BaseBCCC,
-		BCCP:                   output.BaseBCCP,
+		MonthlyGrossWithExtras: int(float64(output.MonthlyGrossWithExtras) * reductionFactor),
+		BCCC:                   int(float64(output.BaseBCCC) * reductionFactor),
+		BCCP:                   int(float64(output.BaseBCCP) * reductionFactor),
 		IrpfAmount:             output.IrpfAmount,
 		IrpfEffectiveRate:      output.IrpfEffectiveRate,
 		SSContributions:        output.SSContributions.TotalWorker,
 		NetSalary:              output.NetSalary,
 	}
 
-	log.Printf("usecase: payroll entity built | NetSalary=%d | IRPF=%d | SSContributions=%d",
-		payroll.NetSalary, payroll.IrpfAmount, payroll.SSContributions)
-
-	log.Printf("usecase: saving payroll for employee %s with generated payroll ID=%s", employeeID, payroll.ID)
-	log.Printf("usecase: payroll entity details before save: %+v", payroll)
-	log.Printf("usecase: employeeID=%s | CategoryID=%s | AgreementID=%s | SalaryComplements=%+v",
-		employee.ID, category.ID, agreement.ID, salaryComplements)
+	log.Println("output calcsalary.GeneratePayrollOutput(payrollOutput), payroll.PersonalComplement with reduction", payroll.PersonalComplement)
 
 	if err := a.payrollRepo.SavePayroll(ctx, &payroll); err != nil {
-		log.Printf("usecase: failed to save payroll incident: %v", err)
 		return domain.Payroll{}, err
 	}
 
-	log.Printf("usecase: payroll saved successfully with ID=%s", payroll.ID)
+	log.Println("reductionFactor before SavePayrollSalaryComplement", reductionFactor)
 
 	for _, sc := range salaryComplements {
 		payrollSC := domain.PayrollSalaryComplement{
 			PayrollID: payroll.ID,
 			Name:      sc.Name,
 			Type:      sc.Type,
-			Value:     sc.Value,
+			Value:     int(float64(sc.Value) * reductionFactor),
 		}
 		if err := a.payrollRepo.SavePayrollSalaryComplement(ctx, payrollSC); err != nil {
-			log.Printf("usecase: failed to save payroll salary complement: %v", err)
 			return domain.Payroll{}, err
 		}
-		log.Printf("usecase: saved payroll salary complement | Name=%s | Value=%d", sc.Name, sc.Value)
 	}
-	log.Printf("usecase: payroll calculation completed successfully for employee_id=%s", employeeIDstring)
+
 	return payroll, nil
+}
+
+func applyFactor(values []int, factor float64) []int {
+	res := make([]int, len(values))
+	for i, v := range values {
+		res[i] = int(float64(v) * factor)
+	}
+	return res
 }
