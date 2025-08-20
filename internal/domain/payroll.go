@@ -13,6 +13,7 @@ type Payroll struct {
 	EndDate                time.Time
 	ExtraPayment           bool
 	BaseSalary             int
+	SalaryComplements      []int
 	PersonalComplement     int
 	ExtraHourPay           int
 	MonthlyGrossWithExtras int

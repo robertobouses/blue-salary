@@ -3,12 +3,14 @@ package payroll
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type CalculatePayrollRequest struct {
-	EmployeeID string `json:"employee_id"`
+	EmployeeID string    `json:"employee_id"`
+	Month      time.Time `json:"month"`
 }
 
 func (h Handler) PostCalculatePayrollByEmployeeID(c *gin.Context) {
@@ -22,7 +24,7 @@ func (h Handler) PostCalculatePayrollByEmployeeID(c *gin.Context) {
 
 	log.Printf("http: [payroll] received request to calculate payroll for employee_id=%s", req.EmployeeID)
 
-	payroll, err := h.app.CalculatePayrollByEmployeeID(c.Request.Context(), req.EmployeeID)
+	payroll, err := h.app.CalculatePayrollByEmployeeID(c.Request.Context(), req.EmployeeID, req.Month)
 	if err != nil {
 		log.Printf("http: [payroll] error calculating payroll for employee_id=%s: %v", req.EmployeeID, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not calculate payroll"})
