@@ -7,8 +7,10 @@ CREATE TABLE IF NOT EXISTS blues.employee (
     second_last_name TEXT,
     gross_salary INTEGER NOT NULL,
     category_id UUID REFERENCES blues.category(id) ON DELETE SET NULL,
+    hire_date TIMESTAMPTZ NOT NULL,             
+    termination_date TIMESTAMPTZ DEFAULT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+ );
 
 COMMIT;

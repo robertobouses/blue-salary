@@ -13,8 +13,8 @@ type AgreementUpdateRequest struct {
 	ID                    uuid.UUID                 `json:"id"`
 	Name                  string                    `json:"name"`
 	NumberOfExtraPayments int                       `json:"number_of_extra_payments"`
-	Categories            []domain.Category         `json:"categories"`
-	SalaryComplements     []domain.SalaryComplement `json:"salary_complements"`
+	Categories            []CategoryRequest         `json:"categories"`
+	SalaryComplements     []SalaryComplementRequest `json:"salary_complements"`
 }
 
 func (h Handler) UpdateAgreement(c *gin.Context) {
@@ -33,8 +33,25 @@ func (h Handler) UpdateAgreement(c *gin.Context) {
 		Name:                  req.Name,
 		NumberOfExtraPayments: req.NumberOfExtraPayments,
 	}
-	categories := req.Categories
-	salaryComplements := req.SalaryComplements
+	categories := make([]domain.Category, len(req.Categories))
+	for i, cat := range req.Categories {
+		categories[i] = domain.Category{
+			Name:        cat.Name,
+			Level:       cat.Level,
+			BaseSalary:  cat.BaseSalary,
+			AgreementID: req.ID,
+		}
+	}
+
+	salaryComplements := make([]domain.SalaryComplement, len(req.SalaryComplements))
+	for i, sc := range req.SalaryComplements {
+		salaryComplements[i] = domain.SalaryComplement{
+			Name:        sc.Name,
+			Type:        sc.Type,
+			Value:       sc.Value,
+			AgreementID: req.ID,
+		}
+	}
 
 	if err := h.app.UpdateFullAgreement(
 		c.Request.Context(),

@@ -23,13 +23,16 @@ func (r *Repository) FindEmployees() ([]domain.Employee, error) {
 			&employee.FirstName,
 			&employee.LastName,
 			&employee.SecondLastName,
+			&employee.GrossSalary,
+			&employee.CategoryID,
+			&employee.HireDate,
+			&employee.TerminationDate,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		log.Printf("FindEmployees returned employee: ID=%v, FirstName=%v, LastName=%v, SecondLastName=%v",
-			employee.ID, employee.FirstName, employee.LastName, employee.SecondLastName)
+		log.Printf("FindEmployees returned employee: ID=%v, FirstName=%v, LastName=%v, SecondLastName=%v, GrossSalary=%v, CategoryID=%v, HireDate=%v, TerminationDate=%v", employee.ID, employee.FirstName, employee.LastName, employee.SecondLastName, employee.GrossSalary, employee.CategoryID, employee.HireDate, employee.TerminationDate)
 
 		employees = append(employees, employee)
 	}

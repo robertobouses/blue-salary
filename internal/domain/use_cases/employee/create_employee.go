@@ -19,11 +19,13 @@ func (a AppService) CreateEmployee(ctx context.Context, input employee.EmployeeR
 	}
 
 	employee := domain.Employee{
-		FirstName:      input.FirstName,
-		LastName:       input.SecondLastName,
-		SecondLastName: input.SecondLastName,
-		GrossSalary:    input.GrossSalary,
-		CategoryID:     categoryID,
+		FirstName:       input.FirstName,
+		LastName:        input.SecondLastName,
+		SecondLastName:  input.SecondLastName,
+		GrossSalary:     input.GrossSalary,
+		CategoryID:      categoryID,
+		HireDate:        input.HireDate,
+		TerminationDate: input.TerminationDate,
 	}
 
 	if err := a.employeeRepo.SaveEmployee(ctx, employee); err != nil {

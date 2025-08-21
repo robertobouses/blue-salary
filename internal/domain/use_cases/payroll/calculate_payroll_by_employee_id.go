@@ -66,7 +66,32 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 		return domain.Payroll{}, err
 	}
 
+	startDate, endDate := getMonthRange(month)
+
+	if employee.HireDate.After(endDate) {
+		log.Printf("Employee %s starts after this month (%v), skipping payroll", employee.ID, month)
+		return domain.Payroll{}, nil
+	}
+
+	if employee.TerminationDate != nil && employee.TerminationDate.Before(startDate) {
+		log.Printf("Employee %s terminated before this month (%v), skipping payroll", employee.ID, month)
+		return domain.Payroll{}, nil
+	}
+
 	daysOff := 0
+
+	if employee.HireDate.After(startDate) && employee.HireDate.Before(endDate) {
+		daysWorked := int(endDate.Sub(employee.HireDate).Hours()/24) + 1
+		daysOff += MonthlyDays - daysWorked
+	}
+
+	if employee.TerminationDate != nil {
+		if employee.TerminationDate.Before(endDate) && employee.TerminationDate.After(startDate) {
+			daysWorked := int(employee.TerminationDate.Sub(startDate).Hours()/24) + 1
+			daysOff += MonthlyDays - daysWorked
+		}
+	}
+
 	for _, inc := range incidents {
 		days := int(inc.EndDate.Sub(inc.StartDate).Hours()/24) + 1
 		daysOff += days
@@ -81,8 +106,7 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 		}
 	}
 
-	// reducedBase := int(float64(category.BaseSalary) * reductionFactor)
-	// reducedComplements := applyFactor(salaryComplementsValues, reductionFactor)
+	log.Printf("Employee %s, daysOff=%d, reductionFactor=%.2f", employee.ID, daysOff, reductionFactor)
 
 	payrollInput := calcsalary.PayrollInput{
 		BaseSalary:            category.BaseSalary,
@@ -106,8 +130,6 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	}
 
 	log.Println("input before calcsalary.GeneratePayrollOutput(payrollInput)", payrollInput)
-	// monthlyPersonalComplement := calcsalary.MonthlyPersonalComplement(payrollInput)
-	// payrollInput.PersonalComplement = int(float64(monthlyPersonalComplement) * reductionFactor)
 
 	output := calcsalary.GeneratePayrollOutput(payrollInput)
 
@@ -119,6 +141,8 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 	payroll := domain.Payroll{
 		EmployeeID:             employeeID,
 		BaseSalary:             int(float64(output.BaseSalary) * reductionFactor),
+		StartDate:              startDate,
+		EndDate:                endDate,
 		SalaryComplements:      applyFactor(output.SalaryComplements, reductionFactor),
 		PersonalComplement:     int(float64(output.PersonalComplement) * reductionFactor),
 		ExtraHourPay:           output.ExtraHoursPay,
@@ -160,4 +184,11 @@ func applyFactor(values []int, factor float64) []int {
 		res[i] = int(float64(v) * factor)
 	}
 	return res
+}
+
+func getMonthRange(month time.Time) (time.Time, time.Time) {
+	start := time.Date(month.Year(), month.Month(), 1, 0, 0, 0, 0, month.Location())
+	end := start.AddDate(0, 1, 0).Add(-time.Nanosecond)
+
+	return start, end
 }
