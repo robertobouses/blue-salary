@@ -17,6 +17,7 @@ type AgreementRepository interface {
 	FindAgreements() ([]domain.Agreement, error)
 	FindCategoriesByAgreementID(agreementID uuid.UUID) ([]domain.Category, error)
 	FindSalaryComplementsByID(agreementID uuid.UUID) ([]domain.SalaryComplement, error)
+	FindCategoryByID(categoryID uuid.UUID) (domain.Category, error)
 }
 
 func NewApp(AgreementRepository AgreementRepository) AppService {

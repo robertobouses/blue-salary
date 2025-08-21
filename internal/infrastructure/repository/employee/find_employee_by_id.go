@@ -17,6 +17,8 @@ func (r *Repository) FindEmployeeByID(employeeID uuid.UUID) (domain.Employee, er
 		&employee.SecondLastName,
 		&employee.GrossSalary,
 		&employee.CategoryID,
+		&employee.HireDate,
+		&employee.TerminationDate,
 	)
 	log.Printf("FindEmployeeByID returned employee: ID=%v, FirstName=%v, LastName=%v, SecondLastName=%v, GrossSalary=%v, CategoryID=%v", employee.ID, employee.FirstName, employee.LastName, employee.SecondLastName, employee.GrossSalary, employee.CategoryID)
 	if err != nil {

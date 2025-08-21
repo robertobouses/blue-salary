@@ -3,16 +3,19 @@ package employee
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type EmployeeRequest struct {
-	FirstName      string `json:"first_name"`
-	LastName       string `json:"last_name"`
-	SecondLastName string `json:"second_last_name"`
-	GrossSalary    int    `json:"gross_salary"`
-	CategoryID     string `json:"category_id"`
+	FirstName       string     `json:"first_name"`
+	LastName        string     `json:"last_name"`
+	SecondLastName  string     `json:"second_last_name"`
+	GrossSalary     int        `json:"gross_salary"`
+	CategoryID      string     `json:"category_id"`
+	HireDate        time.Time  `json:"hire_date"`
+	TerminationDate *time.Time `json:"termination_date"`
 }
 
 func (h Handler) PostEmployee(c *gin.Context) {
