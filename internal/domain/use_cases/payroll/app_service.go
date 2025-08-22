@@ -13,6 +13,7 @@ type PayrollRepository interface {
 	SavePayroll(ctx context.Context, payroll *domain.Payroll) error
 	SavePayrollSalaryComplement(ctx context.Context, payrollSalaryComplement domain.PayrollSalaryComplement) error
 	FindIncidentByEmployeeID(employeeID uuid.UUID, month time.Time) ([]domain.PayrollIncident, error)
+	FindPayrollByID(payrollID uuid.UUID) (domain.Payroll, error)
 }
 
 type EmployeeRepository interface {
