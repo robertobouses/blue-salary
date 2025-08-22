@@ -17,6 +17,7 @@ type PayrollRepository interface {
 
 type EmployeeRepository interface {
 	FindEmployeeByID(employeeID uuid.UUID) (domain.Employee, error)
+	FindEmployees() ([]domain.Employee, error)
 }
 
 type AgreementRepository interface {

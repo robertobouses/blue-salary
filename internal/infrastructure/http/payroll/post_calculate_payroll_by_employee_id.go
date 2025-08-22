@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CalculatePayrollRequest struct {
@@ -23,8 +24,12 @@ func (h Handler) PostCalculatePayrollByEmployeeID(c *gin.Context) {
 	}
 
 	log.Printf("http: [payroll] received request to calculate payroll for employee_id=%s", req.EmployeeID)
-
-	payroll, err := h.app.CalculatePayrollByEmployeeID(c.Request.Context(), req.EmployeeID, req.Month)
+	employeeID, err := uuid.Parse(req.EmployeeID)
+	if err != nil {
+		log.Printf("usecase: invalid payroll_id format: %v", err)
+		return
+	}
+	payroll, err := h.app.CalculatePayrollByEmployeeID(c.Request.Context(), employeeID, req.Month)
 	if err != nil {
 		log.Printf("http: [payroll] error calculating payroll for employee_id=%s: %v", req.EmployeeID, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not calculate payroll"})

@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/robertobouses/calcsalary v0.0.0-20250820114135-9dc0dd499305
+	github.com/robertobouses/calcsalary v0.0.0-20250822110742-f218e7cfaa6e
 	github.com/spf13/cobra v1.9.1
 )
 

@@ -10,9 +10,10 @@ import (
 
 type App interface {
 	CreatePayrollIncident(ctx context.Context, req PayrollIncidentRequest) error
-	CalculatePayrollByEmployeeID(ctx context.Context, employeeID string, month time.Time) (domain.Payroll, error)
-	CalculatePersonalComplementByEmployeeID(ctx context.Context, employeeIDstring string) (int, error)
+	CalculatePayrollByEmployeeID(ctx context.Context, employeeID uuid.UUID, month time.Time) (domain.Payroll, error)
+	CalculatePersonalComplementByEmployeeID(ctx context.Context, employeeIDstring uuid.UUID) (int, error)
 	LoadIncidentByEmployeeID(employeeID uuid.UUID, month time.Time) ([]domain.PayrollIncident, error)
+	CalculatePayrollsByMonth(ctx context.Context, month time.Time) ([]domain.Payroll, error)
 }
 
 func NewHandler(app App) Handler {
