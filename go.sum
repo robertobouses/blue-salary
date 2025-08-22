@@ -105,6 +105,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/robertobouses/calcsalary v0.0.0-20250820114135-9dc0dd499305 h1:TVT+NitzKnoYCNwpji5DM0htBRMcEpwOEVYyzmNuvqQ=
 github.com/robertobouses/calcsalary v0.0.0-20250820114135-9dc0dd499305/go.mod h1:BvigIM5ukI5oV2ozKujrFXurUWlfcUpWUqvZWYphxs0=
+github.com/robertobouses/calcsalary v0.0.0-20250822110742-f218e7cfaa6e h1:7le0pjS2GonOaIcHNoc5KG/zJAUayezEhLPHH+dx41Q=
+github.com/robertobouses/calcsalary v0.0.0-20250822110742-f218e7cfaa6e/go.mod h1:BvigIM5ukI5oV2ozKujrFXurUWlfcUpWUqvZWYphxs0=
 github.com/rogpeppe/go-internal v1.12.0 h1:exVL4IDcn6na9z1rAb56Vxr+CgyK3nn3O+epU5NdKM8=
 github.com/rogpeppe/go-internal v1.12.0/go.mod h1:E+RYuTGaKKdloAfM02xzb0FW3Paa99yedzYV+kq4uf4=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=

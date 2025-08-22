@@ -9,15 +9,7 @@ import (
 	calcsalary "github.com/robertobouses/calcsalary/domain"
 )
 
-func (a AppService) CalculatePersonalComplementByEmployeeID(ctx context.Context, employeeIDstring string) (int, error) {
-	log.Printf("usecase: starting payroll calculation for employee_id=%s", employeeIDstring)
-
-	employeeID, err := uuid.Parse(employeeIDstring)
-	if err != nil {
-		log.Printf("usecase: invalid payroll_id format: %v", err)
-		return 0, err
-	}
-
+func (a AppService) CalculatePersonalComplementByEmployeeID(ctx context.Context, employeeID uuid.UUID) (int, error) {
 	employee, err := a.employeeRepo.FindEmployeeByID(employeeID)
 	if err != nil {
 		log.Printf("usecase error: CalculatePayrollByEmployeeID, error Find Employee by ID: %v", err)

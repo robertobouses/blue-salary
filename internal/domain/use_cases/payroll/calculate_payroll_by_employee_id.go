@@ -15,13 +15,7 @@ const (
 	MonthlyDays = 30
 )
 
-func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeIDstring string, month time.Time) (domain.Payroll, error) {
-	log.Printf("usecase: starting payroll calculation for employee_id=%s", employeeIDstring)
-
-	employeeID, err := uuid.Parse(employeeIDstring)
-	if err != nil {
-		return domain.Payroll{}, fmt.Errorf("invalid employee ID format: %v", err)
-	}
+func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID uuid.UUID, month time.Time) (domain.Payroll, error) {
 
 	employee, err := a.employeeRepo.FindEmployeeByID(employeeID)
 	if err != nil {
@@ -128,15 +122,26 @@ func (a AppService) CalculatePayrollByEmployeeID(ctx context.Context, employeeID
 		HasAscendantsOver65:   model145.AscendantsCount > 0,
 		HasDisabledAscendants: model145.HasDisabledAscendants,
 	}
+	log.Printf("[DEBUG payrollInput] baseSalary=%d grossSalary=%d complements=%v children=%d extras=%d",
+		payrollInput.BaseSalary,
+		payrollInput.GrossSalary,
+		payrollInput.SalaryComplements,
+		payrollInput.NumberOfChildren,
+		payrollInput.NumberOfExtraPayments,
+	)
+	tb := calcsalary.TaxableBase(payrollInput)
+	min := calcsalary.PersonalAndFamilyMinimum(payrollInput)
+	red := calcsalary.WorkIncomeReduction(payrollInput)
+	gross := calcsalary.AnnualGrossSalaryWithExtras(payrollInput)
+
+	log.Printf("[DEBUG IRPF] gross=%d reduction=%d min=%d taxableBase=%d",
+		gross, red, min, tb)
 
 	log.Println("input before calcsalary.GeneratePayrollOutput(payrollInput)", payrollInput)
 
 	output := calcsalary.GeneratePayrollOutput(payrollInput)
 
-	log.Println("output after calcsalary.GeneratePayrollOutput(payrollOutput)", output)
-
-	log.Println("output calcsalary.GeneratePayrollOutput(payrollOutput), output.PersonalComplement", output.PersonalComplement)
-	log.Println("output calcsalary.GeneratePayrollOutput(payrollOutput), output.PersonalComplement with reduction", int(float64(output.PersonalComplement)*reductionFactor))
+	log.Println("output after GeneratePayrollOutput", output)
 
 	payroll := domain.Payroll{
 		EmployeeID:             employeeID,

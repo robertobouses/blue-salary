@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CalculatePersonalComplementRequest struct {
@@ -22,7 +23,13 @@ func (h Handler) PostCalculatePersonalComplementByEmployeeID(c *gin.Context) {
 
 	log.Printf("http: received calculate salary complement request for employee_id=%s", req.EmployeeID)
 
-	personalComplement, err := h.app.CalculatePersonalComplementByEmployeeID(c.Request.Context(), req.EmployeeID)
+	employeeID, err := uuid.Parse(req.EmployeeID)
+	if err != nil {
+		log.Printf("usecase: invalid payroll_id format: %v", err)
+		return
+	}
+
+	personalComplement, err := h.app.CalculatePersonalComplementByEmployeeID(c.Request.Context(), employeeID)
 	if err != nil {
 		log.Printf("http: failed to calculate personal complement for employee_id=%s: %v", req.EmployeeID, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not calculate personal complement"})

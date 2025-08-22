@@ -60,6 +60,7 @@ func (s *Server) Run(port string) error {
 	payroll.POST("/calculate", s.payroll.PostCalculatePayrollByEmployeeID)
 	payroll.POST("/personalcomplement", s.payroll.PostCalculatePersonalComplementByEmployeeID)
 	payroll.GET("/incident", s.payroll.GetPayrollIncidentsByEmployeeID)
+	payroll.POST("/month", s.payroll.PostCalculatePayrollsByMonth)
 
 	log.Printf("running api at %s port\n", port)
 	return s.engine.Run(fmt.Sprintf(":%s", port))
