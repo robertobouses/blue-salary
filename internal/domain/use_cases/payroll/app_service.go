@@ -13,6 +13,8 @@ type PayrollRepository interface {
 	SavePayroll(ctx context.Context, payroll *domain.Payroll) error
 	SavePayrollSalaryComplement(ctx context.Context, payrollSalaryComplement domain.PayrollSalaryComplement) error
 	FindIncidentByEmployeeID(employeeID uuid.UUID, month time.Time) ([]domain.PayrollIncident, error)
+	FindPayrollByID(ctx context.Context, payrollID uuid.UUID) (domain.Payroll, error)
+	FindSalaryComplementsByPayrollID(ctx context.Context, payrollID uuid.UUID) ([]domain.PayrollSalaryComplement, error)
 }
 
 type EmployeeRepository interface {
@@ -30,17 +32,23 @@ type Model145Repository interface {
 	FindModel145ByEmployeeID(ctx context.Context, employeeID uuid.UUID) (domain.Model145, error)
 }
 
+type PDFService interface {
+	RenderPayroll(payroll domain.Payroll, complements []domain.PayrollSalaryComplement) ([]byte, error)
+}
+
 func NewApp(
 	payrollRepository PayrollRepository,
 	employeeRepository EmployeeRepository,
 	agreementRepository AgreementRepository,
 	model145Repository Model145Repository,
+	pdfService PDFService,
 ) AppService {
 	return AppService{
 		payrollRepo:   payrollRepository,
 		employeeRepo:  employeeRepository,
 		agreementRepo: agreementRepository,
 		model145Repo:  model145Repository,
+		pdfService:    pdfService,
 	}
 
 }
@@ -50,4 +58,5 @@ type AppService struct {
 	employeeRepo  EmployeeRepository
 	agreementRepo AgreementRepository
 	model145Repo  Model145Repository
+	pdfService    PDFService
 }
