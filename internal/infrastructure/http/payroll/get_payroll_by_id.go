@@ -29,6 +29,8 @@ type PayrollResponse struct {
 }
 
 func (h *Handler) GetPayrollByID(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	payrollIDString := c.Param("id")
 
 	payrollID, err := uuid.Parse(payrollIDString)
@@ -38,7 +40,7 @@ func (h *Handler) GetPayrollByID(c *gin.Context) {
 		return
 	}
 
-	payroll, err := h.app.LoadPayrollByID(payrollID)
+	payroll, err := h.app.LoadPayrollByID(ctx, payrollID)
 	if err != nil {
 		log.Printf("Error loading Payroll by ID: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get Payroll details"})

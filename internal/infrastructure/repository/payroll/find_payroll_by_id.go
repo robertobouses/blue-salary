@@ -1,6 +1,7 @@
 package payroll
 
 import (
+	"context"
 	"database/sql"
 	"log"
 
@@ -8,7 +9,7 @@ import (
 	"github.com/robertobouses/blue-salary/internal/domain"
 )
 
-func (r *Repository) FindPayrollByID(payrollID uuid.UUID) (domain.Payroll, error) {
+func (r *Repository) FindPayrollByID(ctx context.Context, payrollID uuid.UUID) (domain.Payroll, error) {
 	row := r.findPayrollByID.QueryRow(payrollID)
 
 	var payroll domain.Payroll

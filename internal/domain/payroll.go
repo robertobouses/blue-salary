@@ -40,3 +40,8 @@ type PayrollIncident struct {
 	StartDate   time.Time
 	EndDate     time.Time
 }
+
+type GeneratePayrollPDFOutput struct {
+	FileName string
+	Content  []byte
+}

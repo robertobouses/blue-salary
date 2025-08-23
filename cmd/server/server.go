@@ -14,6 +14,7 @@ import (
 	handlerEmployee "github.com/robertobouses/blue-salary/internal/infrastructure/http/employee"
 	handlerModel145 "github.com/robertobouses/blue-salary/internal/infrastructure/http/model_145"
 	handlerPayroll "github.com/robertobouses/blue-salary/internal/infrastructure/http/payroll"
+	pdfPayroll "github.com/robertobouses/blue-salary/internal/infrastructure/pdf"
 	repositoryAgreement "github.com/robertobouses/blue-salary/internal/infrastructure/repository/agreement"
 	repositoryEmployee "github.com/robertobouses/blue-salary/internal/infrastructure/repository/employee"
 	repositoryModel145 "github.com/robertobouses/blue-salary/internal/infrastructure/repository/model_145"
@@ -65,11 +66,15 @@ var ServerCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal("failde to init payroll repository:", err)
 		}
+		pdfService := pdfPayroll.NewGenerator()
+		if err != nil {
+			log.Fatal("failde to init payroll repository:", err)
+		}
 
 		agreementApp := appAgreement.NewApp(agreementRepo)
 		employeeApp := appEmployee.NewApp(employeeRepo)
 		model145App := appModel145.NewApp(model145Repo)
-		payrollApp := appPayroll.NewApp(payrollRepo, employeeRepo, agreementRepo, model145Repo)
+		payrollApp := appPayroll.NewApp(payrollRepo, employeeRepo, agreementRepo, model145Repo, pdfService)
 
 		agreementHandler := handlerAgreement.NewHandler(&agreementApp)
 		employeeHandler := handlerEmployee.NewHandler(employeeApp)
