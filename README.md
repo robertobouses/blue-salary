@@ -16,5 +16,5 @@ docker-compose up -d
 ### Run migrations
 go run cmd/main.go migrations
 
-### Run migrations
+### Run app
 go run cmd/main.go server

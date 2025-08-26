@@ -23,12 +23,24 @@ func (a AppService) GeneratePayrollsPDFByMonth(ctx context.Context, month time.T
 	}
 
 	for _, payroll := range payrolls {
+		employee, err := a.employeeRepo.FindEmployeeByID(payroll.EmployeeID)
+		if err != nil {
+			return nil, fmt.Errorf("render payroll pdf: %w", err)
+		}
 		complements, err := a.payrollRepo.FindSalaryComplementsByPayrollID(ctx, payroll.ID)
 		if err != nil {
 			return nil, fmt.Errorf("get salary complements for payroll %s: %w", payroll.ID, err)
 		}
+		category, err := a.agreementRepo.FindCategoryByID(employee.CategoryID)
+		if err != nil {
+			return nil, fmt.Errorf("get category by id: %w", err)
+		}
+		company, err := a.companyRepo.FindCompanyByAgreementID(ctx, category.AgreementID)
+		if err != nil {
+			return nil, fmt.Errorf("get salary complements by payroll id: %w", err)
+		}
 
-		pdfBytes, err := a.pdfService.RenderPayroll(payroll, complements)
+		pdfBytes, err := a.pdfService.RenderPayroll(payroll, complements, employee, company)
 		if err != nil {
 			return nil, fmt.Errorf("render payroll pdf for %s: %w", payroll.ID, err)
 		}

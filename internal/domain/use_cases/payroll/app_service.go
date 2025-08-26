@@ -34,7 +34,11 @@ type Model145Repository interface {
 }
 
 type PDFService interface {
-	RenderPayroll(payroll domain.Payroll, complements []domain.PayrollSalaryComplement) ([]byte, error)
+	RenderPayroll(payroll domain.Payroll, complements []domain.PayrollSalaryComplement, employee domain.Employee, company domain.Company) ([]byte, error)
+}
+
+type CompanyRepository interface {
+	FindCompanyByAgreementID(ctx context.Context, agreementID uuid.UUID) (domain.Company, error)
 }
 
 func NewApp(
@@ -43,6 +47,7 @@ func NewApp(
 	agreementRepository AgreementRepository,
 	model145Repository Model145Repository,
 	pdfService PDFService,
+	companyRepository CompanyRepository,
 ) AppService {
 	return AppService{
 		payrollRepo:   payrollRepository,
@@ -50,6 +55,7 @@ func NewApp(
 		agreementRepo: agreementRepository,
 		model145Repo:  model145Repository,
 		pdfService:    pdfService,
+		companyRepo:   companyRepository,
 	}
 
 }
@@ -60,4 +66,5 @@ type AppService struct {
 	agreementRepo AgreementRepository
 	model145Repo  Model145Repository
 	pdfService    PDFService
+	companyRepo   CompanyRepository
 }
