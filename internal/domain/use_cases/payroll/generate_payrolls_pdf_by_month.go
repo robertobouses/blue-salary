@@ -28,7 +28,12 @@ func (a AppService) GeneratePayrollsPDFByMonth(ctx context.Context, month time.T
 			return nil, fmt.Errorf("get salary complements for payroll %s: %w", payroll.ID, err)
 		}
 
-		pdfBytes, err := a.pdfService.RenderPayroll(payroll, complements)
+		employee, err := a.employeeRepo.FindEmployeeByID(payroll.EmployeeID)
+		if err != nil {
+			return nil, fmt.Errorf("render payroll pdf: %w", err)
+		}
+
+		pdfBytes, err := a.pdfService.RenderPayroll(payroll, complements, employee)
 		if err != nil {
 			return nil, fmt.Errorf("render payroll pdf for %s: %w", payroll.ID, err)
 		}

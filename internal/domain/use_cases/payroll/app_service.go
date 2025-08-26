@@ -34,7 +34,7 @@ type Model145Repository interface {
 }
 
 type PDFService interface {
-	RenderPayroll(payroll domain.Payroll, complements []domain.PayrollSalaryComplement) ([]byte, error)
+	RenderPayroll(payroll domain.Payroll, complements []domain.PayrollSalaryComplement, employee domain.Employee) ([]byte, error)
 }
 
 func NewApp(

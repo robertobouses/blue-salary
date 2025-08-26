@@ -14,13 +14,17 @@ func (a AppService) GeneratePayrollPDFByID(ctx context.Context, payrollID uuid.U
 	if err != nil {
 		return domain.GeneratePayrollPDFOutput{}, fmt.Errorf("get payroll: %w", err)
 	}
+	employee, err := a.employeeRepo.FindEmployeeByID(payroll.EmployeeID)
+	if err != nil {
+		return domain.GeneratePayrollPDFOutput{}, fmt.Errorf("get employee: %w", err)
+	}
 
 	complements, err := a.payrollRepo.FindSalaryComplementsByPayrollID(ctx, payrollID)
 	if err != nil {
 		return domain.GeneratePayrollPDFOutput{}, fmt.Errorf("get salary complements by payroll id: %w", err)
 	}
 
-	pdfBytes, err := a.pdfService.RenderPayroll(payroll, complements)
+	pdfBytes, err := a.pdfService.RenderPayroll(payroll, complements, employee)
 	if err != nil {
 		return domain.GeneratePayrollPDFOutput{}, fmt.Errorf("render payroll pdf: %w", err)
 	}
