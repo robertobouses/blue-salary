@@ -15,7 +15,8 @@ type App interface {
 	LoadIncidentByEmployeeID(employeeID uuid.UUID, month time.Time) ([]domain.PayrollIncident, error)
 	CalculatePayrollsByMonth(ctx context.Context, month time.Time) ([]domain.Payroll, error)
 	LoadPayrollByID(ctx context.Context, payrollID uuid.UUID) (domain.Payroll, error)
-	GeneratePayrollPDF(ctx context.Context, payrollID uuid.UUID) (domain.GeneratePayrollPDFOutput, error)
+	GeneratePayrollPDFByID(ctx context.Context, payrollID uuid.UUID) (domain.GeneratePayrollPDFOutput, error)
+	GeneratePayrollsPDFByMonth(ctx context.Context, month time.Time) ([]domain.GeneratePayrollPDFOutput, error)
 }
 
 func NewHandler(app App) Handler {
