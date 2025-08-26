@@ -24,6 +24,9 @@ var findPayrollByIDQuery string
 //go:embed sql/find_salary_complements_by_payroll_id.sql
 var findSalaryComplementsByPayrollIDQuery string
 
+//go:embed sql/find_payrolls_by_month.sql
+var findPayrollsByMonthQuery string
+
 func NewRepository(db *sql.DB) (*Repository, error) {
 	savePayrollIncidentStmt, err := db.Prepare(savePayrollIncidentQuery)
 	if err != nil {
@@ -49,6 +52,10 @@ func NewRepository(db *sql.DB) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
+	findPayrollsByMonthStmt, err := db.Prepare(findPayrollsByMonthQuery)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Repository{
 		db:                               db,
@@ -58,6 +65,7 @@ func NewRepository(db *sql.DB) (*Repository, error) {
 		findIncidentByEmployeeID:         findIncidentByEmployeeIDStmt,
 		findPayrollByID:                  findPayrollByIDStmt,
 		findSalaryComplementsByPayrollID: findSalaryComplementsByPayrollIDStmt,
+		findPayrollsByMonth:              findPayrollsByMonthStmt,
 	}, nil
 }
 
@@ -69,4 +77,5 @@ type Repository struct {
 	findIncidentByEmployeeID         *sql.Stmt
 	findPayrollByID                  *sql.Stmt
 	findSalaryComplementsByPayrollID *sql.Stmt
+	findPayrollsByMonth              *sql.Stmt
 }

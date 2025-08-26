@@ -15,6 +15,7 @@ type PayrollRepository interface {
 	FindIncidentByEmployeeID(employeeID uuid.UUID, month time.Time) ([]domain.PayrollIncident, error)
 	FindPayrollByID(ctx context.Context, payrollID uuid.UUID) (domain.Payroll, error)
 	FindSalaryComplementsByPayrollID(ctx context.Context, payrollID uuid.UUID) ([]domain.PayrollSalaryComplement, error)
+	FindPayrollsByMonth(ctx context.Context, month time.Time) ([]domain.Payroll, error)
 }
 
 type EmployeeRepository interface {

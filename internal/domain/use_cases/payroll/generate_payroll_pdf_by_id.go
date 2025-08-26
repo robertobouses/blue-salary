@@ -9,7 +9,7 @@ import (
 	"github.com/robertobouses/blue-salary/internal/domain"
 )
 
-func (a AppService) GeneratePayrollPDF(ctx context.Context, payrollID uuid.UUID) (domain.GeneratePayrollPDFOutput, error) {
+func (a AppService) GeneratePayrollPDFByID(ctx context.Context, payrollID uuid.UUID) (domain.GeneratePayrollPDFOutput, error) {
 	payroll, err := a.payrollRepo.FindPayrollByID(ctx, payrollID)
 	if err != nil {
 		return domain.GeneratePayrollPDFOutput{}, fmt.Errorf("get payroll: %w", err)
