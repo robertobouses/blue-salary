@@ -14,7 +14,7 @@ func NewGenerator() *Generator {
 	return &Generator{}
 }
 
-func (g *Generator) RenderPayroll(payroll domain.Payroll, complements []domain.PayrollSalaryComplement, employee domain.Employee) ([]byte, error) {
+func (g *Generator) RenderPayroll(payroll domain.Payroll, complements []domain.PayrollSalaryComplement, employee domain.Employee, company domain.Company) ([]byte, error) {
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddUTF8Font("ArialUTF8", "", "internal/infrastructure/pdf/fonts/ARIAL.TTF")
@@ -25,7 +25,22 @@ func (g *Generator) RenderPayroll(payroll domain.Payroll, complements []domain.P
 	pdf.SetFont("ArialUTF8", "B", 16)
 	pdf.Cell(0, 10, "Payroll Report")
 	pdf.Ln(15)
+	pdf.SetFont("LFAXIDI", "", 12)
 
+	pdf.Cell(0, 10, fmt.Sprintf("Company: %s", company.Name))
+	pdf.Ln(8)
+
+	pdf.Cell(0, 10, fmt.Sprintf("Address: %s", company.Address))
+	pdf.Ln(8)
+
+	pdf.Cell(0, 10, fmt.Sprintf("CIF: %s", company.CIF))
+	pdf.Ln(8)
+
+	pdf.Cell(0, 10, fmt.Sprintf("CCC: %s", company.CCC))
+	pdf.Ln(8)
+
+	pdf.Cell(0, 10, fmt.Sprintf("Period: %s to %s", payroll.StartDate.Format("02-01-2006"), payroll.EndDate.Format("02-01-2006")))
+	pdf.Ln(12)
 	pdf.SetFont("LFAXIDI", "", 12)
 
 	pdf.Cell(0, 10, fmt.Sprintf("Employee ID: %s", payroll.EmployeeID.String()))
